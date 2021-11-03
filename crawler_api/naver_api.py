@@ -164,25 +164,25 @@ def naver_review_crawling(df):
 #     return df
 
 
-if __name__=='__main__':
-
-    # 경로 설정 및 인덱스 수정
-
-    store_info = pd.read_csv(r'C:\Users\jeong\OneDrive\문서\카카오톡 받은 파일\storeInfo_2.csv') # 경로변경
-    store_info = store_info[:].reset_index(drop=True) # 인덱스 수정
-
-
-    # 네이버에서 음식점 경로값 크롤링
-    df = naver_store_id(store_info)
-    store_info = pd.concat([store_info, df['n_link']], axis=1)
-
-
-    # # 음식점에 추가될 영업시간 및 사진 url 크롤링
-    # # store_df = add_store_info(store_info)
-    # # store_df.to_csv(os.path.join(path, 'naver_store_info_add.csv'), header=False, index=False)
-
-    # 네이버 음식점 경로값을 통해 리뷰 크롤링
-    path = './'
-    review_df = naver_review_crawling(store_info)
-    review_df.to_csv(os.path.join(path, 'naver_review.csv'), header=False, index=False)
+# if __name__=='__main__':
+#
+#     # 경로 설정 및 인덱스 수정
+#
+#     store_info = pd.read_csv(r'C:\Users\jeong\OneDrive\문서\카카오톡 받은 파일\storeInfo_2.csv') # 경로변경
+#     store_info = store_info[:].reset_index(drop=True) # 인덱스 수정
+#
+#
+#     # 네이버에서 음식점 경로값 크롤링
+#     df = naver_store_id(store_info)
+#     store_info = pd.concat([store_info, df['n_link']], axis=1)
+#
+#
+#     # # 음식점에 추가될 영업시간 및 사진 url 크롤링
+#     # # store_df = add_store_info(store_info)
+#     # # store_df.to_csv(os.path.join(path, 'naver_store_info_add.csv'), header=False, index=False)
+#
+#     # 네이버 음식점 경로값을 통해 리뷰 크롤링
+#     path = './'
+#     review_df = naver_review_crawling(store_info)
+#     review_df.to_csv(os.path.join(path, 'naver_review.csv'), header=False, index=False)
 

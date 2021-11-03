@@ -214,18 +214,18 @@ def collecting_reviews(review_param, review_cnt):
 
 
 
-if __name__=='__main__':
-    # 데이터 불러오기
-    info = pd.read_csv("C:/Users/aj878/OneDrive/바탕 화면/호용의후예/기업/웹크롤링/storeInfo_2.csv")
-    storeInfo = info[1800:1900].reset_index(drop=True)
-
-
-
-    # 필요한 정보 가져오기
-    storeInfo, all_reviews = google(storeInfo, True , True)
-
-    reviewconcat = pd.DataFrame(columns=['store_id', 'portal_id', 'date', 'score', 'review'])
-    reviewconcat = pd.concat([reviewconcat, all_reviews])
-    reviewconcat.to_csv("./data/google_1700_1800.csv", encoding='utf-8-sig')
-#     # 엑셀로 저장
-#     all_reviews.to_csv("google_9000.csv", encoding='utf-8-sig')
+# if __name__=='__main__':
+#     # 데이터 불러오기
+#     info = pd.read_csv("C:/Users/aj878/OneDrive/바탕 화면/호용의후예/기업/웹크롤링/storeInfo_2.csv")
+#     storeInfo = info[1800:1900].reset_index(drop=True)
+#
+#
+#
+#     # 필요한 정보 가져오기
+#     storeInfo, all_reviews = google(storeInfo, True , True)
+#
+#     reviewconcat = pd.DataFrame(columns=['store_id', 'portal_id', 'date', 'score', 'review'])
+#     reviewconcat = pd.concat([reviewconcat, all_reviews])
+#     reviewconcat.to_csv("./data/google_1700_1800.csv", encoding='utf-8-sig')
+# #     # 엑셀로 저장
+# #     all_reviews.to_csv("google_9000.csv", encoding='utf-8-sig')
