@@ -1,6 +1,6 @@
-from diningcode_api import *
+from crawler_api.diningcode_api import *
 from csv_handler import *
-from siksin_api import *
+from crawler_api.siksin_api import *
 
 def main(path):
     # store_info 파일 읽어오는 함수 실행
