@@ -120,9 +120,9 @@ def naver_review_crawling(store_info):
                             portal_id = 1004
 
                             data = [store_id, portal_id, score, review, write_date]
-                            print(data)
+                            # print(data)
                             df = df.append(pd.Series(data, index=df.columns), ignore_index=True)
-                        print(len(review_list))
+                        # print(len(review_list))
 
 
                 except:
@@ -131,7 +131,7 @@ def naver_review_crawling(store_info):
                     continue
 
             except:
-                print("리뷰 크롤링 종료; 귀찮지만 갯수 확인..♡")
+                # print("리뷰 크롤링 종료; 귀찮지만 갯수 확인..♡")
                 break
 
     return df
