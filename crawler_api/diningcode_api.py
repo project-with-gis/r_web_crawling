@@ -171,3 +171,5 @@ def profile(store_id, soup, profile_url):
     df.insert(0, 'store_id', store_id)
 
     return df
+
+

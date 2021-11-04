@@ -6,6 +6,7 @@ import time
 from tqdm import tqdm
 import re
 import os
+import random
 
 
 def naver_store_id(store_info):
@@ -19,7 +20,7 @@ def naver_store_id(store_info):
         store_id = store_info.loc[i]['store_id']
         store_name = store_info.loc[i]['store_name']
         store_data = store_info.loc[i][['store_addr', 'store_addr_new', 'store_tel']]
-        time.sleep(5)
+        time.sleep(random.uniform(2, 10))
 
         for store in store_data:
             if store == None:
@@ -50,11 +51,15 @@ def naver_store_id(store_info):
                 data = [store_id, portal_id, n_link]
                 df = df.append(pd.Series(data, index=df.columns), ignore_index=True)
                 # print(store_id, n_link)
-
                 break
             except:
                 continue
-                n_link = None
+
+        # n_link = None
+        if store_id not in df['store_id'].tolist():
+            data = [store_id, portal_id, None]
+            df = df.append(pd.Series(data, index=df.columns), ignore_index=True)
+
     return df
 
 
@@ -108,6 +113,7 @@ def naver_review_crawling(df):
                             continue
 
                         for j in range(len(review_list)):
+
                             review = review_list[j]['body']
                             review_hi = review_list[j]['highlightOffsets']
                             score = review_list[j]['rating']
