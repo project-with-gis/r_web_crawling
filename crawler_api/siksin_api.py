@@ -28,7 +28,7 @@ def siksin_review_scraping(store_info):
     }
 
     check = []
-    df = pd.DataFrame(columns=['store_id', 'portal_id', 'review_score', 'review', 'write_date'])
+    df = pd.DataFrame(columns=['store_id', 'portal_id', 'date', 'score', 'review'])
     for i in tqdm(range(len(store_info))):
         store_id = store_info.loc[i]['store_id']
         store_num = store_info.loc[i]['s_link']
@@ -59,11 +59,12 @@ def siksin_review_scraping(store_info):
                 review = review_list['storyContents']
                 score = review_list['score']
                 timestamp = review_list['writeDt']
-                write_date = datetime.datetime.fromtimestamp(timestamp/1000)
+                # write_date = datetime.datetime.fromtimestamp(timestamp/1000)
+                date = datetime.date.strftime(timestamp,'%Y-%m-%d')
                 portal_id = 1001
                 num += 1
 
-                data = [store_id, portal_id, score, review, write_date]
+                data = [store_id, portal_id, date, score, review]
                 df = df.append(pd.Series(data, index=df.columns), ignore_index=True)
 
             if num == cnt:
