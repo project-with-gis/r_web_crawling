@@ -5,6 +5,9 @@ from crawler_api.google_api import *
 from crawler_api.naver_api import *
 
 # 다이닝코드 리뷰 크롤링해서 저장하는 함수
+from preprocessing import transform_datetime_df, rounding_off_scores_df
+
+
 def diningcode_crawling(path):
     # store_info 파일 읽어오는 함수 실행
     info_df = read_csv(path)
@@ -15,6 +18,14 @@ def diningcode_crawling(path):
     # save_csv(review_df_da, path, name)
     return review_df_da # 각 포털별로 크롤링한 결과를 넘겨준다면 main함수에서는 뭐해 ?
 
+def siksin_crawling(path):
+    info_df = read_csv(path)
+    info_df = info_df[:5]
+    s_link = add_siksin_info(info_df)
+    un_df = siksin_review_scraping(s_link)
+    date = transform_datetime_df(un_df, 2)
+    review_df_si = rounding_off_scores_df(date, 3)
+    return review_df_si
 
 
 def main(path):
@@ -50,4 +61,4 @@ def main(path):
 
 
 if __name__ == '__main__':
-    main()
+    # siksin_crawling('./data/storeInfo_2.csv')

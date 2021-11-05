@@ -9,6 +9,9 @@ import os
 
 
 # headers 주기적으로 갱신해줘야함
+from csv_handler import read_csv, save_csv
+
+
 def siksin_review_scraping(store_info):
     auth = store_info['auth'][0]
     headers = {
@@ -59,8 +62,8 @@ def siksin_review_scraping(store_info):
                 review = review_list['storyContents']
                 score = review_list['score']
                 timestamp = review_list['writeDt']
-                # write_date = datetime.datetime.fromtimestamp(timestamp/1000)
-                date = datetime.date.strftime(timestamp,'%Y-%m-%d')
+                date = datetime.datetime.fromtimestamp(timestamp/1000)
+                # date = datetime.date.strptime(timestamp,'%Y-%m-%d')
                 portal_id = 1001
                 num += 1
 
@@ -122,3 +125,10 @@ def add_siksin_info(store_info):
     return df
 
 
+# if __name__ == '__main__':
+#     info_df = read_csv('C:/Users/alti1/PycharmProjects/r_web_crawling/data/storeInfo_2.csv')
+#     info_df = info_df[:5]
+#     s_link = add_siksin_info(info_df)
+#     review_df_si = siksin_review_scraping(s_link)
+#     save_csv(review_df_si, 'C:/Users/alti1/PycharmProjects/r_web_crawling/data', 'siksintest.csv')
+#     print(review_df_si.head())
