@@ -8,7 +8,6 @@ def read_csv(path):  # 따옴표 잊지말기
     df = pd.DataFrame(data)
     return df
 
-
 def save_csv(df, path, name):
     df.to_csv(os.path.join(path, name), header=False, index=False)  # header와 index는 필요하면 True해주기
 
