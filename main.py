@@ -30,7 +30,7 @@ def google_crawling(path):
     # info_df = info[1800:1900].reset_index(drop=True)
 
     # 리뷰데이터 크롤링
-    storeInfo, review_df_go = google(info_df, True, True)
+    storeInfo, review_df_go = google(info_df)
 
     # 영어리뷰 번역리뷰 제거
     review_df_go = google_eng_transfer_del(review_df_go)
@@ -77,35 +77,36 @@ def main(path):
     # 데이터 전처리
     # sentence_tokenized_review에 문장단위로 분리된 corpus가 저장된
     lines = concat_review['review']
-    sentence_tokenized_review = sentence_tokenized(lines)
+    sentence_tokenized_review = sentence_tokenized(lines) #리스트 형태로 나옴
 
     # print(sentence_tokenized_review)
 
     # 특수문자나 기호 사이 띄어짐
-    cleaned_corpus = clean_punc_2(sentence_tokenized_review)
+    cleaned_corpus = clean_punc_2(sentence_tokenized_review) #리스트 형태로 나옴
     # print(cleaned_corpus)
 
     # 정규표현식을 사용한 특수문자 처리
-    basic_preprocessed_corpus = clean_text(cleaned_corpus)
+    basic_preprocessed_corpus = clean_text(cleaned_corpus) #리스트 형태로 나옴
     # for i in range(len(basic_preprocessed_corpus)):
     #     print(basic_preprocessed_corpus[i])
 
     # 띄어쓰기, 맞춤법 검사
-    checked_sent =[]
-
-    checked_sent.append(sent_check())
+    checked_sent=(sent_check(basic_preprocessed_corpus))
+    # print(checked_sent)
 
     # review 파일에 전처리 컬럼 추가
+    concat_review['after_review'] = checked_sent
+
 
     # csv 파일로 저장
     # save_csv(total_review, path, name)
 
     # return total_review
-    return review_df_go
+    return concat_review
 
 if __name__ == '__main__':
-    review_df_go = main('data/google_pre_test.csv')
-    # print(review_df_go)
+    review_data = main('data/storeInfo_2.csv')
+    print(review_data)
 
 
 

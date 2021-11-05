@@ -66,9 +66,13 @@ def clean_text(texts):
     return corpus
 
 # 맞춤법 검사 및 띄어쓰기
-def sent_check(sent):
-    spelled_sent = spell_checker.check(sent)
-    checked_sent = spelled_sent.checked
+def sent_check(sent_list):
+    checked_sent_list=[]
+    for sent in sent_list:
+        spelled_sent = spell_checker.check(sent)
+        checked_sent = spelled_sent.checked
+        checked_sent_list.append(checked_sent)
+    return checked_sent_list
 
 
 # 구글 사이트/ 영어나, 번역된 리뷰 제거
