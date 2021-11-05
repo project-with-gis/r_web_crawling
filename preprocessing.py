@@ -2,6 +2,8 @@ from datetime import datetime
 
 import pandas as pd
 
+from csv_handler import read_csv, save_csv
+
 
 def remove_english(df):
     print("전처리하는 함수")
@@ -82,7 +84,9 @@ def rounding_off_scores_df(df, num):
     return df
 
 
-# if __name__ == '__main__':
-    # swap_columns_with_num('data/siksin_1review_test.csv', 0,1,2,4,3)
-    # transform_datetime('data/siksin_1review_test.csv', 4)
-    # rounding_off_scores('data/siksin_1review_test.csv', 2)
+if __name__ == '__main__':
+    raw = read_csv('C:/Users/alti1/PycharmProjects/pythonProject/siksin_review_1030.csv')
+    date = transform_datetime_df(raw, 4)
+    score = rounding_off_scores_df(date, 2)
+    col = swap_columns_with_num_df(score, 0,1,4,2,3)
+    save_csv(col, 'C:/Users/alti1/PycharmProjects/pythonProject', 'siksin_전전처리_1106.csv')
