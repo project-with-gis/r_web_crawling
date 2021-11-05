@@ -119,3 +119,5 @@ def add_siksin_info(store_info):
         data = [store_id, portal_id, s_link, auth, img_url, website]
         df = df.append(pd.Series(data, index=df.columns), ignore_index=True)
     return df
+
+

@@ -171,3 +171,17 @@ def profile(store_id, soup, profile_url):
     df.insert(0, 'store_id', store_id)
 
     return df
+
+
+# if __name__=='__main__':
+#     info_df = pd.read_csv("C:/Users/MIN JEONG JO/OneDrive/바탕 화면/기업협력프로젝트/크롤링/storeInfo_2.csv")
+#     #info_df = store_info[:10]
+#
+#     # d_link 알아오기
+#     link_df = diningcode_link(info_df)
+#
+#     # profile함수 이용해서 정보 알아오기
+#     review_df = diningcode_review(link_df)
+#
+#     # 엑셀로 저장
+#     review_df.to_csv("test10.csv", encoding='utf-8-sig')
