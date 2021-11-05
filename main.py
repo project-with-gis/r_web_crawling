@@ -5,19 +5,21 @@ from crawler_api.google_api import *
 from crawler_api.naver_api import *
 
 # 다이닝코드 리뷰 크롤링해서 저장하는 함수
-def diningcode_crawling(path, name):
+def diningcode_crawling(path):
     # store_info 파일 읽어오는 함수 실행
     info_df = read_csv(path)
     # 다이닝코드 리뷰 크롤링 함수 실행
     link_df = diningcode_link(info_df)
     review_df_da = diningcode_review(link_df)
-    # csv 파일로 저장
-    save_csv(review_df_da, path, name)
+    # # csv 파일로 저장
+    # save_csv(review_df_da, path, name)
     return review_df_da # 각 포털별로 크롤링한 결과를 넘겨준다면 main함수에서는 뭐해 ?
 
 
+
 def main(path):
-    # store_info 파일 읽어오는 함수 실행
+    # info_df = diningcode_crawling(path) # master
+    # store_info 파일 읽어오는 함수 실행 # branch
     info_df = read_csv(path)
 
     # 다이닝코드 리뷰 크롤링 함수 실행
