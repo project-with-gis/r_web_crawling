@@ -1,6 +1,6 @@
-
+import kss
+from hanspell import spell_checker
 import re
-# from pykospacing import spacing
 
 
 # 특정행을 기준으로 null값이 있으면 해당 행을 삭제
@@ -64,6 +64,12 @@ def clean_text(texts):
         review = re.sub(r'\s+$', '', review) #remove space from the end
         corpus.append(review)
     return corpus
+
+# 맞춤법 검사 및 띄어쓰기
+def sent_check(sent):
+    spelled_sent = spell_checker.check(sent)
+    checked_sent = spelled_sent.checked
+
 
 # 구글 사이트/ 영어나, 번역된 리뷰 제거
 def google_eng_transfer_del(google_review_data):

@@ -74,8 +74,6 @@ def main(path):
     # 4사이트 합침
     concat_review = concat_df(review4_del_list)
 
-
-
     # 데이터 전처리
     # sentence_tokenized_review에 문장단위로 분리된 corpus가 저장된
     lines = concat_review['review']
@@ -93,6 +91,9 @@ def main(path):
     #     print(basic_preprocessed_corpus[i])
 
     # 띄어쓰기, 맞춤법 검사
+    checked_sent =[]
+
+    checked_sent.append(sent_check())
 
     # review 파일에 전처리 컬럼 추가
 
