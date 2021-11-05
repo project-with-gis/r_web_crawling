@@ -9,7 +9,7 @@ import os
 
 
 # headers 주기적으로 갱신해줘야함
-def siksin_review_scraping(store_info):
+def siksin_review_crawling(store_info):
     auth = store_info['auth'][0]
     headers = {
         'authority': 'api.siksinhot.com',

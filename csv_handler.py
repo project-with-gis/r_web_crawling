@@ -14,7 +14,8 @@ def save_csv(df, path, name):
 
 
 def concat_df(*args):
-    total_df = pd.concat([*args])
+    # 여러개일 경우 list로 넣어준다
+    total_df = pd.concat(*args)
     total_df.to_csv('./data/total_reviews.csv', header=True, index=False)
 
 

@@ -216,7 +216,8 @@ def collecting_reviews(review_param, review_cnt):
 
 # if __name__=='__main__':
 #     # 데이터 불러오기
-#     info = pd.read_csv("C:/Users/aj878/OneDrive/바탕 화면/호용의후예/기업/웹크롤링/storeInfo_2.csv")
+#     path =''
+#     info = pd.read_csv(path+"storeInfo_2.csv")
 #     storeInfo = info[1800:1900].reset_index(drop=True)
 #
 #
