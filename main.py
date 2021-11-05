@@ -4,8 +4,22 @@ from crawler_api.siksin_api import *
 from crawler_api.google_api import *
 from crawler_api.naver_api import *
 
-def main(path):
+# 다이닝코드 리뷰 크롤링해서 저장하는 함수
+def diningcode_crawling(path):
     # store_info 파일 읽어오는 함수 실행
+    info_df = read_csv(path)
+    # 다이닝코드 리뷰 크롤링 함수 실행
+    link_df = diningcode_link(info_df)
+    review_df_da = diningcode_review(link_df)
+    # # csv 파일로 저장
+    # save_csv(review_df_da, path, name)
+    return review_df_da # 각 포털별로 크롤링한 결과를 넘겨준다면 main함수에서는 뭐해 ?
+
+
+
+def main(path):
+    # info_df = diningcode_crawling(path) # master
+    # store_info 파일 읽어오는 함수 실행 # branch
     info_df = read_csv(path)
 
     # 다이닝코드 리뷰 크롤링 함수 실행
@@ -29,13 +43,10 @@ def main(path):
     total_review = concat_df(review_df_si, review_df_da, review_df_go, review_df_na)
     # review 파일에 전처리 컬럼 추가
 
-
     # csv 파일로 저장
     save_csv(total_review, path, name)
 
     return total_review
-
-
 
 
 if __name__ == '__main__':
