@@ -3,6 +3,8 @@ import numpy as np
 import re
 import kss
 from hanspell import spell_checker
+from pykospacing import spacing
+from soynlp.normalizer import *
 
 # # 형식 변환 # #
 def form_change(df):
@@ -125,6 +127,14 @@ def clean_text(texts):
 
 
 # # 2.Spell Check # #
-
-
-
+def spell_check_text(texts):
+    corpus = []
+    for sent in texts:
+        spaced_text = spacing(sent)
+        spelled_sent = spell_checker.check(sent) # 맞춤법
+        checked_sent = spelled_sent.checked # 띄어쓰기
+        normalized_sent = repeat_normalize(checked_sent) # 반복되는 이모티콘이나 자모 normalization
+        for lownword in lownword_map: # 외래어 사전
+            normalized_sent = normalized_sent.replace(lownword, lownword_map[lownword])
+        corpus.append(normalized_sent)
+    return corpus

@@ -148,3 +148,4 @@ def naver_review_crawling(store_info):
 #     path = './'
 #     review_df_na = naver_review_crawling(link_df)
 #     review_df_na.to_csv(os.path.join(path, 'naver_review.csv'), header=False, index=False)
+
