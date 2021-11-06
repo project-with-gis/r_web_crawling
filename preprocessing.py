@@ -74,7 +74,12 @@ def clean_punc(lines):
 
 
 def clean_text(texts):
-
+    emoji_pattern = re.compile("["
+            u"\U0001F600-\U0001F64F"  # emoticons
+            u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+            u"\U0001F680-\U0001F6FF"  # transport & map symbols
+            u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                               "]+", flags=re.UNICODE)
     review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',str(texts)) #remove punctuation
     review = re.sub(r'\d+','', review)# remove number# remove number
     review = review.lower() #lower case
@@ -89,9 +94,12 @@ def clean_text(texts):
     review = re.sub(r"^\s+", '', review) #remove space from start
     review = re.sub(r'\s+$', '', review) #remove space from the end
     review = emoticon_normalize(review, num_repeats=2) #하하, 이모티콘 등 제거
+    review = emoji_pattern.sub(r'', review) #이모지 제거
 
     print(review)
     return review
+
+
 
 # 맞춤법 검사 및 띄어쓰기
 def sent_check(sent):
