@@ -12,26 +12,13 @@ import pandas as pd
 
 def main(path):
 
-    # 다이닝리뷰 크롤링 함수 실행
+    # 사이트별 크롤링 함수 실행
     review_df_di = diningcode_crawling(path)
     # print(review_df_di)
-
-
-    # 구글리뷰 크롤링 함수 실행
     review_df_go = google_crawling(path)
     # print(review_df_go)
-
-    # 영어나, 번역된 리뷰 제거
-    review_df_go = google_eng_transfer_del(review_df_go)
-    # print(review_df_go)
-
-
-    # 네이버 리뷰 크롤링 함수 실행
     review_df_na = naver_crawling(path)
     # print(review_df_na)
-
-
-    #식신리뷰 크롤링 함수 실행
     review_df_si = siksin_review_crawling(path)
     #print(reveiw_df_si)
 
@@ -57,7 +44,6 @@ def main(path):
         # print(after_review)
 
     # review 파일에 전처리 컬럼 추가
-
     total_review['after_review'] = after_review
     # print(total_review)
 
