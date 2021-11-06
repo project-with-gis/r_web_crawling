@@ -6,7 +6,7 @@ from hanspell import spell_checker
 from pykospacing import spacing
 from soynlp.normalizer import *
 
-# # 형식 변환 # #
+# # 0.형식변환 및 결측값 제거 # #
 def form_change(df):
     df.columns = ['store_id', 'portal_id', 'score', 'review', 'date']
 
@@ -62,6 +62,16 @@ def change_date(df):
 
     return df
 
+# 결측값 제거
+def del_nan(new_df):
+    df = form_change(new_df) # 형식변환 완료된 df 호출
+    df = df.astype({'review': 'str'})
+    df = df[df.review != 'nan']
+    df.reset_index(drop=True, inplace=True)
+
+    df = df[df.score != 0]
+
+    return df
 
 # # 1.Basic Preprocessing # #
 def tokenizer(review):
@@ -128,13 +138,31 @@ def clean_text(texts):
 
 # # 2.Spell Check # #
 def spell_check_text(texts):
+    lownword_map = lownword_dic()
+
     corpus = []
+
     for sent in texts:
         spaced_text = spacing(sent)
-        spelled_sent = spell_checker.check(sent) # 맞춤법
-        checked_sent = spelled_sent.checked # 띄어쓰기
-        normalized_sent = repeat_normalize(checked_sent) # 반복되는 이모티콘이나 자모 normalization
-        for lownword in lownword_map: # 외래어 사전
+        spelled_sent = spell_checker.check(sent)
+        checked_sent = spelled_sent.checked
+        normalized_sent = repeat_normalize(checked_sent)
+        for lownword in lownword_map:
             normalized_sent = normalized_sent.replace(lownword, lownword_map[lownword])
         corpus.append(normalized_sent)
+
     return corpus
+
+def lownword_dic():
+    lownword_map = {}
+    lownword_data = open('/content/drive/MyDrive/confused_loanwords.txt', 'r', encoding='utf-8')
+
+    lines = lownword_data.readlines()
+
+    for line in lines:
+        line = line.strip()
+        miss_spell = line.split('\t')[0]
+        ori_word = line.split('\t')[1]
+        lownword_map[miss_spell] = ori_word
+
+    return lownword_map
