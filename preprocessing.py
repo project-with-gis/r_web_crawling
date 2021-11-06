@@ -11,6 +11,15 @@ def remove_nan(df,subset):
     df = df.reset_index(drop=True)
     return df
 
+# 전처리 후 리뷰가 '' 비어있는 상태인 행 삭제
+def remove_after_nan(total_review):
+    for i, after_review in enumerate(total_review['after_review']):
+        if after_review == '':
+            total_review = total_review.drop(total_review.index[i])
+            total_review.reset_index(drop=True)
+    return total_review
+
+
 # 전처리과정 전부 진행하는 함수
 def prepro(line):
     sentence_tokenized_review = sentence_tokenized(line)
@@ -50,7 +59,6 @@ def sentence_tokenized(lines):
 
 
 def clean_punc(lines):
-    texts =[]
     for line in lines:
         punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
         punct_mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
@@ -66,10 +74,10 @@ def clean_punc(lines):
         specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': ''}
         for s in specials:
             text = text.replace(s, specials[s])
-        texts.append(text)
 
-    print(texts)
-    return texts
+
+    print(text)
+    return text
 
 
 
@@ -127,9 +135,6 @@ def lownword_check(sent):
     for l_word in lownword_map:
         normalized_sent = sent.replace(l_word, lownword_map[l_word])
     return normalized_sent
-
-
-
 
 
 

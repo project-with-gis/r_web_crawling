@@ -38,6 +38,9 @@ def main(path):
     total_review['after_review'] = after_review
     # print(total_review)
 
+    #전처리 후 리뷰가 '' 비어있는 상태인 행 삭제
+    total_review = remove_after_nan(total_review)
+
     # csv 파일로 저장
     # save_csv(total_review, path, name)
     total_review.to_csv('./data/total_reviews.csv', header=True, index=False)
