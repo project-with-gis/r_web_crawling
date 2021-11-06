@@ -13,18 +13,17 @@ def remove_nan(df,subset):
 
 # 전처리과정 전부 진행하는 함수
 def prepro(line):
-    sentence_tokenized_review = sentence_tokenized(line) #리스트 형태로 나옴
-
+    sentence_tokenized_review = sentence_tokenized(line)
     # print(sentence_tokenized_review)
     # print(len(sentence_tokenized_review))
 
     # 특수문자나 기호 사이 띄어짐
-    cleaned_corpus = clean_punc(sentence_tokenized_review) #리스트 형태로 나옴
+    cleaned_corpus = clean_punc(sentence_tokenized_review)
     # print(cleaned_corpus)
     # print(len(cleaned_corpus))
 
     # 정규표현식을 사용한 특수문자 처리
-    basic_preprocessed_corpus = clean_text(cleaned_corpus) #리스트 형태로 나옴
+    basic_preprocessed_corpus = clean_text(cleaned_corpus)
     # for i in range(len(basic_preprocessed_corpus)):
     #     print(basic_preprocessed_corpus[i])
     # print(basic_preprocessed_corpus)
@@ -35,7 +34,9 @@ def prepro(line):
     # print(checked_sent)
     # print(len(checked_sent))
 
-    return checked_sent
+    prepro_sent = lownword_check(checked_sent)
+
+    return prepro_sent
 
 
 def sentence_tokenized(lines):
@@ -98,6 +99,33 @@ def sent_check(sent):
     checked_sent = spelled_sent.checked
     print(checked_sent)
     return checked_sent
+
+# 외래어
+def lownword():
+    lownword_map = {}
+    lownword_data = open('data/confused_loanwords.txt', 'r', encoding='utf-8') #외래어 사전 데이터
+    lines = lownword_data.readlines()
+
+    for line in lines:
+        line = line.strip()
+        miss_spell = line.split('\t')[0]
+        ori_word = line.split('\t')[1]
+        lownword_map[miss_spell] = ori_word
+
+    return lownword_map
+
+def lownword_check(sent):
+    lownword_map = lownword()
+    for l_word in lownword_map:
+        normalized_sent = sent.replace(l_word, lownword_map[l_word])
+    return normalized_sent
+
+
+
+
+
+
+
 
 
 # 구글 사이트/ 영어나, 번역된 리뷰 제거
