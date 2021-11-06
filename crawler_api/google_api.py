@@ -8,67 +8,67 @@ import time
 import random
 
 
-def google(storeInfo):
-    # if link == True and review == True:
-    all_reviews = pd.DataFrame(columns=['store_id', 'date', 'score', 'review'])  # 빈 데이터프레임 생성
+def google(storeInfo, link, review):
+    if link == True and review == True:
+        all_reviews = pd.DataFrame(columns=['store_id', 'date', 'score', 'review'])  # 빈 데이터프레임 생성
 
-    if 'website' not in storeInfo.columns:
-        storeInfo['website'] = pd.Series()
-    storeInfo['g_link'] = pd.Series()
+        if 'website' not in storeInfo.columns:
+            storeInfo['website'] = pd.Series()
+        storeInfo['g_link'] = pd.Series()
 
-    for i in tqdm(range(len(storeInfo))):
-        time.sleep(random.uniform(1, 5))
-        google_link, website, review_param, review_cnt = search_store(storeInfo['store_name'][i],
-                                                                      storeInfo['store_addr'][i],
-                                                                      storeInfo['store_addr_new'][i],
-                                                                      storeInfo['store_tel'][i])
-        if google_link:
-            storeInfo.loc[i, 'g_link'] = google_link
-        if website:
-            storeInfo.loc[i, 'website'] = website
+        for i in tqdm(range(len(storeInfo))):
+            time.sleep(random.uniform(1, 5))
+            google_link, website, review_param, review_cnt = search_store(storeInfo['store_name'][i],
+                                                                          storeInfo['store_addr'][i],
+                                                                          storeInfo['store_addr_new'][i],
+                                                                          storeInfo['store_tel'][i])
+            if google_link:
+                storeInfo.loc[i, 'g_link'] = google_link
+            if website:
+                storeInfo.loc[i, 'website'] = website
 
-        if review_cnt != 0:
-            reviews = collecting_reviews(review_param, review_cnt)
-            reviews.insert(0, 'store_id', storeInfo['store_id'][i])
-            all_reviews = pd.concat([all_reviews, reviews])
+            if review_cnt != 0:
+                reviews = collecting_reviews(review_param, review_cnt)
+                reviews.insert(0, 'store_id', storeInfo['store_id'][i])
+                all_reviews = pd.concat([all_reviews, reviews])
 
-    storeInfo = storeInfo[['store_id', 'website', 'g_link']]
-    all_reviews.insert(1, 'portal_id', 1002)
+        storeInfo = storeInfo[['store_id', 'website', 'g_link']]
+        all_reviews.insert(1, 'portal_id', 1002)
 
-    return storeInfo, all_reviews
-    #
-    # elif link == True and review == False:
-    #     if 'website' not in storeInfo.columns:
-    #         storeInfo['website'] = pd.Series()
-    #     storeInfo['g_link'] = pd.Series()
-    #
-    #     for i in tqdm(range(len(storeInfo))):
-    #         google_link, website, review_param, review_cnt = search_store(storeInfo['store_name'][i],
-    #                                                                       storeInfo['store_addr'][i],
-    #                                                                       storeInfo['store_addr_new'][i],
-    #                                                                       storeInfo['store_tel'][i])
-    #         if google_link:
-    #             storeInfo.loc[i, 'g_link'] = google_link
-    #         if website:
-    #             storeInfo.loc[i, 'website'] = website
-    #
-    #     storeInfo = storeInfo[['store_id', 'website', 'g_link']]
-    #     return storeInfo
-    #
-    # elif link == False and review == True:
-    #     all_reviews = pd.DataFrame(columns=['store_id', 'date', 'score', 'review'])  # 빈 데이터프레임 생성
-    #
-    #     for i in tqdm(range(len(storeInfo))):
-    #         if not pd.isna(storeInfo['g_link'][i]):
-    #             review_param, review_cnt = find_review_param(storeInfo['g_link'][i])
-    #             if review_cnt != 0:
-    #                 reviews = collecting_reviews(review_param, review_cnt)
-    #                 reviews.insert(0, 'store_id', storeInfo['store_id'][i])
-    #                 all_reviews = pd.concat([all_reviews, reviews])
-    #
-    #     all_reviews.insert(1, 'portal_id', 1002)
+        return storeInfo, all_reviews
 
-        # return all_reviews
+    elif link == True and review == False:
+        if 'website' not in storeInfo.columns:
+            storeInfo['website'] = pd.Series()
+        storeInfo['g_link'] = pd.Series()
+
+        for i in tqdm(range(len(storeInfo))):
+            google_link, website, review_param, review_cnt = search_store(storeInfo['store_name'][i],
+                                                                          storeInfo['store_addr'][i],
+                                                                          storeInfo['store_addr_new'][i],
+                                                                          storeInfo['store_tel'][i])
+            if google_link:
+                storeInfo.loc[i, 'g_link'] = google_link
+            if website:
+                storeInfo.loc[i, 'website'] = website
+
+        storeInfo = storeInfo[['store_id', 'website', 'g_link']]
+        return storeInfo
+
+    elif link == False and review == True:
+        all_reviews = pd.DataFrame(columns=['store_id', 'date', 'score', 'review'])  # 빈 데이터프레임 생성
+
+        for i in tqdm(range(len(storeInfo))):
+            if not pd.isna(storeInfo['g_link'][i]):
+                review_param, review_cnt = find_review_param(storeInfo['g_link'][i])
+                if review_cnt != 0:
+                    reviews = collecting_reviews(review_param, review_cnt)
+                    reviews.insert(0, 'store_id', storeInfo['store_id'][i])
+                    all_reviews = pd.concat([all_reviews, reviews])
+
+        all_reviews.insert(1, 'portal_id', 1002)
+
+        return all_reviews
 
 
 def search_store(store_name, store_addr, store_addr_new, store_tel):
@@ -216,8 +216,7 @@ def collecting_reviews(review_param, review_cnt):
 
 # if __name__=='__main__':
 #     # 데이터 불러오기
-#     path =''
-#     info = pd.read_csv(path+"storeInfo_2.csv")
+#     info = pd.read_csv("C:/Users/aj878/OneDrive/바탕 화면/호용의후예/기업/웹크롤링/storeInfo_2.csv")
 #     storeInfo = info[1800:1900].reset_index(drop=True)
 #
 #

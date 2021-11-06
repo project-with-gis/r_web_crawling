@@ -6,10 +6,12 @@ from crawler_api.naver_api import *
 from preprocessing import *
 import kss
 from hanspell import spell_checker
+import pandas as pd
+
 # 띄어쓰기, 맞춤법 검사
 # !pip install git+https://github.com/ssut/py-hanspell.git
 
-# 다이닝코드 리뷰 크롤링해서 저장하는 함수
+# 다이닝코드 리뷰 크롤링 함수
 def diningcode_crawling(path):
     # store_info 파일 읽어오는 함수 실행
     info_df = read_csv(path)
@@ -21,7 +23,7 @@ def diningcode_crawling(path):
     return review_df_da
 
 
-# 구글 리뷰 크롤링해서 저장하는 함수
+# 구글 리뷰 크롤링 함수
 def google_crawling(path):
     # store_info 파일 읽어오는 함수 실행
     info_df = read_csv(path)
@@ -40,74 +42,72 @@ def google_crawling(path):
 
     return review_df_go
 
+# 네이버 리뷰 크롤링 함수
+def naver_crawling(path):
+    return 1
+
+def siksin_crawling(path):
+    return 1
+
 def main(path):
+
     # 다이닝리뷰 크롤링 함수 실행
     review_df_di = diningcode_crawling(path)
+    # print(review_df_di)
 
 
     # 구글리뷰 크롤링 함수 실행
     review_df_go = google_crawling(path)
+    # print(review_df_go)
+
     # 영어나, 번역된 리뷰 제거
-    review_df_go_notnul = google_eng_transfer_del(review_df_go)
+    review_df_go = google_eng_transfer_del(review_df_go)
+    # print(review_df_go)
 
 
     # 네이버 리뷰 크롤링 함수 실행
-    # df = naver_store_id(info_df)
-    # store_info = pd.concat([info_df, df['n_link']], axis=1)
-    review_df_na = naver_review_crawling(path)
+    review_df_na = naver_crawling(path)
+    # print(review_df_na)
+
 
     #식신리뷰 크롤링 함수 실행
     review_df_si = siksin_review_crawling(path)
+    #print(reveiw_df_si)
 
-
-    # 4사이트 리뷰데이터 리스트에 담기
-    review4_list =[review_df_di, review_df_go,review_df_na, review_df_si]
-
-    # null값 있는 행 삭제 후 다시 담을 리스트
-    review4_del_list =[]
-    for reviw4 in review4_list:
-        # subset에 컬럼명 적기 (하나여도 리스트로 작성 필수)
-        # 데이터의 'review', 'score' null일 경우 해당 행 삭제
-        review_df_go_notnul = remove_nan(reviw4, ['review', 'score'])
-        review4_del_list.append(review_df_go_notnul)
 
     # 4사이트 합침
-    concat_review = concat_df(review4_del_list)
+    concat_review = concat_df(review_df_di,review_df_go,review_df_na,review_df_si)
+    del concat_review['Unnamed: 0']
+    # print(concat_review)
+
+    # subset에 컬럼명 적기 (하나여도 리스트로 작성 필수)
+    # 데이터의 'review', 'score' null일 경우 해당 행 삭제
+    total_review = remove_nan(concat_review, ['review', 'score'])
+    # print(total_review)
+
 
     # 데이터 전처리
     # sentence_tokenized_review에 문장단위로 분리된 corpus가 저장된
-    lines = concat_review['review']
-    sentence_tokenized_review = sentence_tokenized(lines) #리스트 형태로 나옴
-
-    # print(sentence_tokenized_review)
-
-    # 특수문자나 기호 사이 띄어짐
-    cleaned_corpus = clean_punc_2(sentence_tokenized_review) #리스트 형태로 나옴
-    # print(cleaned_corpus)
-
-    # 정규표현식을 사용한 특수문자 처리
-    basic_preprocessed_corpus = clean_text(cleaned_corpus) #리스트 형태로 나옴
-    # for i in range(len(basic_preprocessed_corpus)):
-    #     print(basic_preprocessed_corpus[i])
-
-    # 띄어쓰기, 맞춤법 검사
-    checked_sent=(sent_check(basic_preprocessed_corpus))
-    # print(checked_sent)
+    # print(total_review['review'])
+    after_review = []
+    for i in range(len(total_review['review'])):
+        after = prepro(total_review['review'][i])
+        after_review.append(after)
+        # print(after_review)
 
     # review 파일에 전처리 컬럼 추가
-    concat_review['after_review'] = checked_sent
 
+    total_review['after_review'] = after_review
+    # print(total_review)
 
     # csv 파일로 저장
     # save_csv(total_review, path, name)
+    total_review.to_csv('./data/total_reviews.csv', header=True, index=False)
 
-    # return total_review
-    return concat_review
+    return total_review
+
 
 if __name__ == '__main__':
-    review_data = main('data/storeInfo_2.csv')
+    review_data = main('data/10.csv')
     print(review_data)
-
-
-
 
