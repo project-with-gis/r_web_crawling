@@ -43,12 +43,12 @@ def clean_punc(text):
     return text.strip()
 
 
-def clean_text(texts):  # 불용어 제거
+def clean_text(texts): # 우리가 쓸 땐 주로 공백제거하는 기능 뿐인듯. 있어야할까 ?
     corpus = []
     for i in range(0, len(texts)):
         review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\-\|\.\:\;\!\-\,\_\~\$\'\"]', '', str(texts[i]))
         review = re.sub(r'\d+', '', str(texts[i]))  # remove number ## 숫자제거 질문) 숫자를 제거해야될까요 ?
-        review = review.lower()  # lower case ## 소문자로 바꾸기
+        review = review.lower()  # lower case ## 소문자로 바꾸기 ## 이것도 우린 필요없는 듯
         review = re.sub(r'\s+', ' ', review)  # remove extra space ## 공백문자제거
         review = re.sub(r'<[^>]+>', '', review)  # remove Html tags
         review = re.sub(r"^\s+", '', review)  # remove space from start ## ^ : 문자열의 제일 앞 부분과 일치함을 의미
@@ -73,7 +73,7 @@ def spell_check_text(texts):  # 한 댓글에 대한 문장들
 
 def make_dictionary():  ## 질문) 파이참에서 데이터 바로 받아서 딕셔너리 만들고싶은데 데이터 다운이 안된다
     lownword_map = {}
-    lownword_data = open('./confused_loanwords.txt', 'r', encoding='utf-8')
+    lownword_data = open('C:/Users/MIN JEONG JO/OneDrive/바탕 화면/confused_loanwords.txt', 'r', encoding='utf-8')
     lines = lownword_data.readlines()
     for line in lines:
         line = line.strip()

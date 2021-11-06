@@ -28,7 +28,7 @@ def main(path): # branch의 메인함수
         spell_preprocessed_corpus = spell_check_text(basic_preprocessed_corpus)
         pre_review.append(spell_preprocessed_corpus)
     review_df_da['preprocessed_review'] = pre_review # 전처리 컬럼에 추가
-    #save_csv(review_df_da, path, "diningcode_전처리_테스트1106")
+    #save_csv(review_df_da, "diningcode_전처리_total.csv")
 
     return review_df_da
 
