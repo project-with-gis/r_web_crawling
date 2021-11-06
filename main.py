@@ -3,6 +3,7 @@ from csv_handler import *
 from crawler_api.siksin_api import *
 from crawler_api.google_api import *
 from crawler_api.naver_api import *
+from preprocessing import *
 
 # 다이닝코드 리뷰 크롤링해서 저장하는 함수
 def diningcode_crawling(path):
@@ -15,6 +16,21 @@ def diningcode_crawling(path):
     # save_csv(review_df_da, path, name)
     return review_df_da
 
+
+def main(path): # branch의 메인함수
+    review_df = read_csv(path) # 크롤링 결과 파일의 path 넣기
+    review_df_da = delete_null(review_df) # 리뷰없는거 제거
+    # 전처리 시작
+    pre_review = []
+    for i in range(len(review_df_da)): # 리뷰하나씩 돌면서 전처리
+        review = review_df_da['review'][i]
+        basic_preprocessed_corpus = basic_check(review)
+        spell_preprocessed_corpus = spell_check_text(basic_preprocessed_corpus)
+        pre_review.append(spell_preprocessed_corpus)
+    review_df_da['preprocessed_review'] = pre_review # 전처리 컬럼에 추가
+    #save_csv(review_df_da, path, "diningcode_전처리_테스트1106")
+
+    return review_df_da
 
 
 # def main(path): # 처음만든 메인함수. 포털별로 크롤링 분리하기 전
@@ -50,10 +66,6 @@ def diningcode_crawling(path):
 #
 #     return total_review
 
-
-def main(path): # branch의 메인함수
-    review_df_da = read_csv(path) # 크롤링 결과 파일의 path 넣기
-    # 전처리 시작
 
 
 
