@@ -89,3 +89,4 @@ def delete_null(df):  # 리뷰없는 데이터 삭제
     new_df = new_df[new_df.review != 'nan']
     new_df.reset_index(drop=True, inplace=True)
     return new_df
+
