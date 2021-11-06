@@ -30,6 +30,8 @@ def concat_df(*args):
     total_df = pd.concat([*args])
     total_df.to_csv('./data/total_reviews.csv', header=True, index=False)
 
+    return total_df
+
 # if __name__=='__main__':
 # df = read_csv('data/storeInfo_2.csv')
 # save_csv(df, './', 'csv_test.csv')
