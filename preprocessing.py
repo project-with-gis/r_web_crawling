@@ -44,11 +44,12 @@ def sentence_tokenized(lines):
     print(lines)
     for sent in kss.split_sentences(lines):
         sentence_tokenized_text.append(sent.strip())
-
+    print(sentence_tokenized_text)
     return sentence_tokenized_text
 
 
 def clean_punc(lines):
+    texts =[]
     for line in lines:
         punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
         punct_mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
@@ -64,9 +65,10 @@ def clean_punc(lines):
         specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': ''}
         for s in specials:
             text = text.replace(s, specials[s])
+        texts.append(text)
 
-    print(text)
-    return text
+    print(texts)
+    return texts
 
 
 
