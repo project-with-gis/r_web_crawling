@@ -74,7 +74,7 @@ def spell_check_text(texts):  # 한 댓글에 대한 문장들
 
 def make_dictionary():  ## 질문) 파이참에서 데이터 바로 받아서 딕셔너리 만들고싶은데 데이터 다운이 안된다
     lownword_map = {}
-    lownword_data = open('C:/Users/MIN JEONG JO/OneDrive/바탕 화면/confused_loanwords.txt', 'r', encoding='utf-8')
+    lownword_data = open('data/confused_loanwords.txt', 'r', encoding='utf-8')
     lines = lownword_data.readlines()
     for line in lines:
         line = line.strip()

@@ -65,7 +65,7 @@ def main(path):  # branch의 메인함수
     return review_df_da
 
 if __name__ == '__main__':
-    review_df_da = main("C:/Users/MIN JEONG JO/OneDrive/바탕 화면/diningcode_total_review_1105.csv")
+    review_df_da = main("data/diningcode_total_review_1105.csv")
 
 # def main(path): # 처음만든 메인함수. 포털별로 크롤링 분리하기 전
 #     # info_df = diningcode_crawling(path) # master
