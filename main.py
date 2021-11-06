@@ -13,15 +13,7 @@ import pandas as pd
 def main(path):
 
     # 사이트별 크롤링 함수 실행
-    review_df_di = diningcode_crawling(path)
-    # print(review_df_di)
-    review_df_go = google_crawling(path)
-    # print(review_df_go)
-    review_df_na = naver_crawling(path)
-    # print(review_df_na)
-    review_df_si = siksin_review_crawling(path)
-    #print(reveiw_df_si)
-
+    review_df_di, review_df_go, review_df_na, review_df_si = site_crawling(path)
 
     # 4사이트 합침
     concat_review = concat_df(review_df_di,review_df_go,review_df_na,review_df_si)
@@ -32,7 +24,6 @@ def main(path):
     # 데이터의 'review', 'score' null일 경우 해당 행 삭제
     total_review = remove_nan(concat_review, ['review', 'score'])
     # print(total_review)
-
 
     # 데이터 전처리
     # sentence_tokenized_review에 문장단위로 분리된 corpus가 저장된

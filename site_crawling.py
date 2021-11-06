@@ -5,6 +5,17 @@ from crawler_api.naver_api import *
 from crawler_api.diningcode_api import *
 from preprocessing import *
 
+def site_crawling(path):
+    review_df_di = diningcode_crawling(path)
+    review_df_go = google_crawling(path)
+    review_df_na = naver_crawling(path)
+    review_df_si = siksin_crawling(path)
+
+    return review_df_di, review_df_go, review_df_na, review_df_si
+
+
+
+
 # 다이닝코드 리뷰 크롤링 함수
 def diningcode_crawling(path):
     # store_info 파일 읽어오는 함수 실행
