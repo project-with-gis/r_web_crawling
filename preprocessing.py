@@ -5,9 +5,19 @@ import kss
 from hanspell import spell_checker
 
 # # 형식 변환 # #
+def form_change(df):
+    df.columns = ['store_id', 'portal_id', 'score', 'review', 'date']
+
+    df = columns_change(df)
+    df = Score_roundUp(df)
+    df = change_date(df)
+
+    df = df.to_csv('t_naver_review.csv')
+
+    return df
+
 # 평점 반올림 하는 함수
 def Score_roundUp(df):
-
   # NaN값 0으로 대체
   df['score'] = df['score'].fillna(0)
 
@@ -25,14 +35,12 @@ def Score_roundUp(df):
 
   return df
 
-
 # 컬럼 순서 변경 함수
 def columns_change(df):
 
   df = df[['store_id', 'portal_id', 'date', 'score', 'review']]
 
   return df
-
 
 # 날짜 형식 변환 함수(수정필요)
 def change_date(df):
@@ -54,7 +62,6 @@ def change_date(df):
 
 
 # # 1.Basic Preprocessing # #
-
 def tokenizer(review):
     sentence_tokenized_text = []
     for i, line in enumerate(review):
@@ -69,7 +76,6 @@ def tokenizer(review):
     basic_preprocessed_corpus = clean_text(cleaned_corpus)
 
     return basic_preprocessed_corpus
-
 
 def clean_punc(text, punct, mapping):
     punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
@@ -89,7 +95,6 @@ def clean_punc(text, punct, mapping):
         text = text.replace(s, specials[s])
 
     return text.strip()
-
 
 def clean_text(texts):
     def clean_text(texts):
