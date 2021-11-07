@@ -20,7 +20,7 @@ def diningcode_crawling(path):
 
 def siksin_crawling(path):
     info_df = read_csv(path)
-    info_df = info_df[:5]
+    # info_df = info_df[:5]
     s_link = add_siksin_info(info_df)
     un_df = siksin_review_scraping(s_link)
     date = transform_datetime_df(un_df, 2)
