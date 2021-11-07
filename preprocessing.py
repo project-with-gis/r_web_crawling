@@ -92,14 +92,14 @@ from soynlp.normalizer import *
 
 
 
-
 def basic_preprocessing(data): #문장 조각조각
     # print(data['review'][i]) #줄바꿈 확인용
-    new = data['review'][i].strip().replace('\r\n', '') #엔터미리 제거, \r\n으로 안되면 \n만 해보기
+    new = data['review'][i].strip().replace('\r', '').replace('\n', '') #엔터미리 제거, \r\n, \n 상관없이 가능
     line = kss.split_sentences(new) #왜 굳이 문장문장 조각낼까?
     line = ''.join(line).strip()
     print(line)
     return line #line은 list형태
+
 
 def clean_punc(line): #문장부호같은거 다 삭제
     punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&' + 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ' + 'ㅏㅑㅓㅕㅗㅛㅜㅠㅡㅣㅐㅔㅢㅟㅚㅞㅙㅝㅘ' #웃음같은 자음만 있는거 제거 추가
@@ -125,7 +125,6 @@ def clean_punc(line): #문장부호같은거 다 삭제
     return line
 
 
-
 def spell_check(line):
     spelled_sent = spell_checker.check(line)
     checked_sent = spelled_sent.checked
@@ -133,9 +132,11 @@ def spell_check(line):
     # print(checked_sent)
     return checked_sent
 
+
 def normalizer(sent):
     review = repeat_normalize(sent, num_repeats=2)
     return review
+
 
 def loanword_dic_open():
     loanword_map = {}
@@ -150,15 +151,17 @@ def loanword_dic_open():
     # print(loanword_map)
     return loanword_map
 
+
 def loanword_corrector(sent, map):
     for loan in map:
         corr = sent.replace(loan, map[loan])
     return corr
 
+
 def preprocessing_all_in_one(path, name):
     lines = []
     map = loanword_dic_open()
-    data = read_csv('./data/siksin_전전처리_1107.csv')[:200]
+    data = read_csv('./data/siksin_전전처리_1107.csv', index=False)[:200]
     for i in tqdm(range(len(data.index))):
         basic = basic_preprocessing(data)
         punc = clean_punc(basic)
@@ -171,11 +174,13 @@ def preprocessing_all_in_one(path, name):
     # print(data)
     save_csv(data, path, name)
 
+
 def delete_null(df):  # 리뷰없는 데이터 삭제 함수
     new_df = df.astype({'review': 'str'})
     new_df = new_df[new_df.review != 'nan']
     new_df.reset_index(drop=True, inplace=True)
     return new_df
+
 
 def delete_row(c_df):
     # score와 review에서 결측값인 행 삭제
@@ -188,7 +193,8 @@ def delete_row(c_df):
 
     return df
 
-if __name__ == '__main__':
+
+if __name__ == '__main__': #한국어 전처리 메인함수
     # preprocessing_all_in_one('./data', 'siksin_전처리_1108')
     lines = []
     map = loanword_dic_open()
@@ -204,11 +210,11 @@ if __name__ == '__main__':
     # print(lines)
     data['preprocessed_review'] = lines
     print(data)
-    # save_csv(data,'./data', 'diningcode_전처리_test3_1108.csv')
+    save_csv(data,'./data', 'diningcode_전처리_테스트_23개.csv')
     # csv = read_csv('./data/siksin_1review_test.csv')
     # print(csv.head())
 #
-# if __name__ == '__main__':
+# if __name__ == '__main__': #날짜형식, 반올림, 컬럼 순서 바꿔주기 메인함수
 #     raw = read_csv('./data/siksin_review_1030.csv')
 #     date = transform_datetime_df(raw, 4)
 #     score = rounding_off_scores_df(date, 2)
