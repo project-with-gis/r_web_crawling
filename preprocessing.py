@@ -94,7 +94,8 @@ from soynlp.normalizer import *
 
 
 def basic_preprocessing(data): #문장 조각조각
-    new = data['review'][i].strip().replace('\r\n', '')
+    # print(data['review'][i]) #줄바꿈 확인용
+    new = data['review'][i].strip().replace('\r\n', '') #엔터미리 제거, \r\n으로 안되면 \n만 해보기
     line = kss.split_sentences(new) #왜 굳이 문장문장 조각낼까?
     line = ''.join(line).strip()
     print(line)
@@ -170,22 +171,40 @@ def preprocessing_all_in_one(path, name):
     # print(data)
     save_csv(data, path, name)
 
+def delete_null(df):  # 리뷰없는 데이터 삭제 함수
+    new_df = df.astype({'review': 'str'})
+    new_df = new_df[new_df.review != 'nan']
+    new_df.reset_index(drop=True, inplace=True)
+    return new_df
+
+def delete_row(c_df):
+    # score와 review에서 결측값인 행 삭제
+    new_df = c_df.dropna(axis=0)
+
+    # 리뷰 수를 줄이기 위해 .만 작성한 리뷰도 삭제
+    df = new_df.astype({'review': 'str'})
+    df = df[new_df.review != '.']
+    df.reset_index(drop=True, inplace=True)
+
+    return df
+
 if __name__ == '__main__':
     # preprocessing_all_in_one('./data', 'siksin_전처리_1108')
     lines = []
     map = loanword_dic_open()
-    data = read_csv('./data/siksin_전전처리_1107.csv')[:200]
+    data = read_csv('./data/diningcode_review.csv')[:200]
+    data = delete_row(data)
     for i in tqdm(range(len(data.index))):
         basic = basic_preprocessing(data)
         punc = clean_punc(basic)
         review = spell_check(punc)
-        # fin = normalizer(review)
+        fin = normalizer(review)
         lw = loanword_corrector(review, map)
         lines.append(lw)
     # print(lines)
     data['preprocessed_review'] = lines
-    # print(data)
-    save_csv(data,'./data', 'siksin_전처리_test3_1108.csv')
+    print(data)
+    # save_csv(data,'./data', 'diningcode_전처리_test3_1108.csv')
     # csv = read_csv('./data/siksin_1review_test.csv')
     # print(csv.head())
 #
