@@ -3,9 +3,6 @@ import kss
 import pandas as pd
 from hanspell import spell_checker
 from soynlp.normalizer import *
-import requests
-from bs4 import BeautifulSoup
-from urllib.request import urlretrieve
 
 
 ### 커다란 기능 첫번째 함수
@@ -15,16 +12,25 @@ def basic_check(review):  # 한 행마다 실행되도록. 이 함수가 받아�
     # for sent in kss.split_sentences(review):  # review를 문장 단위로 분리시켜주는 듯
     #     sentence_tokenized_text.append(sent.strip())
 
-    review = review.strip()
-    sentence_tokenized_text = kss.split_sentences(review)
+    review = review.strip() # 중간에 있는 \n 제거 안됨
+    # 엔터를 ''공백으로 변경해서 제거할것임
+    rez = []
+    for x in review:
+        rez.append(x.replace("\n", "").replace("\r", "")) # rez 자체에는 ['안','녕','하', ...] 이런 식이라서 다시 다 합쳐줘야함
+    reviewstr = ''
+    for x in rez:
+        reviewstr += x
+    print(reviewstr)
+    sentence_tokenized_text = kss.split_sentences(reviewstr)
+    print(sentence_tokenized_text)
 
     cleaned_corpus = []  # 특수문자정리
     for sent in sentence_tokenized_text:
         cleaned_corpus.append(clean_punc(sent))
-
     basic_preprocessed_corpus = clean_text(cleaned_corpus)
-
+    print(basic_preprocessed_corpus)
     return basic_preprocessed_corpus
+
 
 
 def clean_punc(text):
@@ -47,18 +53,28 @@ def clean_punc(text):
 
 
 def clean_text(texts):
+    emoji_pattern = re.compile("["
+                               u"\U0001F600-\U0001F64F"  # emoticons
+                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                               u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                               u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                               "]+", flags=re.UNICODE)
+
     corpus = []
     for i in range(0, len(texts)):
         review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\-\|\.\:\;\!\-\,\_\~\$\'\"]', '', str(texts[i]))
-        review = re.sub(r'([ㄱ-ㅎㅏ-ㅣ]+)', '', review) # 자음, 모음만 있는거 제거
-        review = re.sub(r'\d+', '', review)  # remove number
-        review = review.lower()  # lower case ## 우린 필요없는 듯
+        review = re.sub(emoji_pattern, '', review)  # 이모티콘제거
+        review = re.sub(r'([ㄱ-ㅎㅏ-ㅣ]+)', '', review)
+        review = re.sub(r'\d+', '', str(review))  # remove number ## 숫자제거
+        #review = review.lower()  # lower case ## 소문자로 바꾸기
         review = re.sub(r'\s+', ' ', review)  # remove extra space ## 공백문자제거
         review = re.sub(r'<[^>]+>', '', review)  # remove Html tags
         review = re.sub(r"^\s+", '', review)  # remove space from start ## ^ : 문자열의 제일 앞 부분과 일치함을 의미
         review = re.sub(r'\s+$', '', review)  # remove space from the end ## $ : 문자열의 제일 끝 부분과 일치함을 의미
+        review = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]', '', review)  # 한번더추가
         corpus.append(review)
     return corpus
+
 
 
 ### 커다란 기능 두번째 함수
@@ -75,7 +91,7 @@ def spell_check_text(texts):  # 한 댓글에 대한 문장들
     return corpus
 
 
-def make_dictionary():  ## 질문) 파이참에서 데이터 바로 받아서 딕셔너리 만들고싶은데 데이터 다운이 안된다
+def make_dictionary():
     lownword_map = {}
     lownword_data = open('data/confused_loanwords.txt', 'r', encoding='utf-8')
     lines = lownword_data.readlines()
