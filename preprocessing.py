@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pandas as pd
+from tqdm import tqdm
 
 from csv_handler import read_csv, save_csv
 
@@ -154,7 +155,7 @@ def preprocessing_all_in_one(path, name):
     lines = []
     map = loanword_dic_open()
     data = read_csv('./data/siksin_전전처리_1107.csv')[:200]
-    for i in range(len(data.index)):
+    for i in tqdm(range(len(data.index))):
         basic = basic_preprocessing(data)
         punc = clean_punc(basic)
         review = spell_check(punc)
@@ -170,8 +171,8 @@ if __name__ == '__main__':
     # preprocessing_all_in_one('./data', 'siksin_전처리_1108')
     lines = []
     map = loanword_dic_open()
-    data = read_csv('./data/siksin_1review_test.csv')[:200]
-    for i in range(len(data.index)):
+    data = read_csv('./data/siksin_전전처리_1107.csv')[:200]
+    for i in tqdm(range(len(data.index))):
         basic = basic_preprocessing(data)
         punc = clean_punc(basic)
         review = spell_check(punc)
