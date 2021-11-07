@@ -10,10 +10,13 @@ from urllib.request import urlretrieve
 
 ### 커다란 기능 첫번째 함수
 def basic_check(review):  # 한 행마다 실행되도록. 이 함수가 받아오는건 하나의 리뷰
-    sentence_tokenized_text = []  # 문장 단위로 분리된 corpus가 저장
-    review = review.strip()  # 문자열의 '맨앞'과, '맨뒤'의 띄어쓰기(' '), 탭('\t'), 엔터('\n') 제거
-    for sent in kss.split_sentences(review):  # review를 문장 단위로 분리시켜주는 듯
-        sentence_tokenized_text.append(sent.strip())
+    # sentence_tokenized_text = []  # 문장 단위로 분리된 corpus가 저장
+    # review = review.strip()  # 문자열의 '맨앞'과, '맨뒤'의 띄어쓰기(' '), 탭('\t'), 엔터('\n') 제거
+    # for sent in kss.split_sentences(review):  # review를 문장 단위로 분리시켜주는 듯
+    #     sentence_tokenized_text.append(sent.strip())
+
+    review = review.strip()
+    sentence_tokenized_text = kss.split_sentences(review)
 
     cleaned_corpus = []  # 특수문자정리
     for sent in sentence_tokenized_text:
