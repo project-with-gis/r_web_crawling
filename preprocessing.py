@@ -21,7 +21,7 @@ def remove_after_nan(total_review):
 
 
 # 전처리과정 전부 진행하는 함수
-def prepro(line):
+def prepro_1(line):
     sentence_tokenized_review = sentence_tokenized(line)
     # print(sentence_tokenized_review)
     # print(len(sentence_tokenized_review))
@@ -50,6 +50,16 @@ def prepro(line):
     # print("들어가기전",sents)
 
     return sents
+
+
+def prepro_2(review_list):
+    after_review_total = []
+    for i, one_review in enumerate(review_list):
+        after_review = prepro_1(one_review)
+        after_review_total.append(after_review)
+
+    return after_review_total
+
 
 
 def sentence_tokenized(lines):

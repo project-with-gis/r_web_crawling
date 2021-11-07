@@ -28,12 +28,8 @@ def main(path):
 
     # 데이터 전처리
     # print(total_review['review'])
-    after_review_total=[]
-    for i, one_review in enumerate(total_review['review']):
-        after_review = prepro(one_review)
-        after_review_total.append(after_review)
-
-    print(after_review_total)
+    after_review_total = prepro_2(total_review['review'])
+    # print(after_review_total)
 
 
     # review 파일에 전처리 컬럼 추가
@@ -51,6 +47,6 @@ def main(path):
 
 
 if __name__ == '__main__':
-    review_data = main('data/10.csv')
+    review_data = main('data/storeInfo_2.csv')
     print(review_data)
 
