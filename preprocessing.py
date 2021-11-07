@@ -83,10 +83,111 @@ def rounding_off_scores_df(df, num):
     # print(df.iloc[:, num].head(21))
     return df
 
+#----------------------------------------------------------------한국어전처리
+import kss
+from hanspell import spell_checker
+from csv_handler import read_csv, save_csv
+from soynlp.normalizer import *
+
+
+
+
+def basic_preprocessing(data):
+    new = data['review'][i].strip().replace('\r\n', '')
+    line = kss.split_sentences(new) #왜 굳이 문장문장 조각낼까?
+    return line #line은 list형태
+
+def clean_punc(list):
+    punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&' + 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ' #웃음같은 자음만 있는거 제거 추가
+
+    mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
+                     "—": "-", "–": "-", "’": "'", "_": "-", "`": "'", '“': '"', '”': '"', '“': '"', "£": "e",
+                     '∞': 'infinity', 'θ': 'theta', '÷': '/', 'α': 'alpha', '•': '.', 'à': 'a', '−': '-', 'β': 'beta',
+                     '∅': '', '³': '3', 'π': 'pi', }
+    #------------------------------------------------------문장부호같은거 다 삭제
+    for sent in list:
+        for p in mapping:
+            sent = sent.replace(p, '')
+            # print(mapping[p])
+
+        for p in punct:
+            sent = sent.replace(p, '')
+
+        specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': ''}
+        for s in specials:
+            sent = sent.replace(s, '')
+        line = sent.strip() #빈칸 삭제
+    return line
+
+
+
+def spell_check(line):
+    spelled_sent = spell_checker.check(line)
+    checked_sent = spelled_sent.checked
+
+    # print(checked_sent)
+    return checked_sent
+
+def normalizer(sent):
+    review = repeat_normalize(sent, num_repeats=2)
+    return review
+
+def loanword_dic_open():
+    loanword_map = {}
+    loanword_data = open('./data/confused_loanwords.txt', 'r', encoding='UTF-8')
+    word = loanword_data.readlines()
+
+    for s in word:
+        s = s.strip()
+        miss_spell = s.split('\t')[0]
+        ori_word = s.split('\t')[1]
+        loanword_map[miss_spell] = ori_word
+    # print(loanword_map)
+    return loanword_map
+
+def loanword_corrector(sent, map):
+    for loan in map:
+        corr = sent.replace(loan, map[loan])
+    return corr
+
+def preprocessing_all_in_one(path, name):
+    lines = []
+    map = loanword_dic_open()
+    data = read_csv('./data/siksin_전전처리_1107.csv')[:200]
+    for i in range(len(data.index)):
+        basic = basic_preprocessing(data)
+        punc = clean_punc(basic)
+        review = spell_check(punc)
+        fin = normalizer(review)
+        lw = loanword_corrector(fin, map)
+        lines.append(lw)
+    # print(lines)
+    data['preprocessed_review'] = lines
+    # print(data)
+    save_csv(data, path, name)
 
 if __name__ == '__main__':
-    raw = read_csv('C:/Users/alti1/PycharmProjects/pythonProject/siksin_review_1030.csv')
-    date = transform_datetime_df(raw, 4)
-    score = rounding_off_scores_df(date, 2)
-    col = swap_columns_with_num_df(score, 0,1,4,2,3)
-    save_csv(col, 'C:/Users/alti1/PycharmProjects/pythonProject', 'siksin_전전처리_1106.csv')
+    # preprocessing_all_in_one('./data', 'siksin_전처리_1108')
+    lines = []
+    map = loanword_dic_open()
+    data = read_csv('./data/siksin_1review_test.csv')[:200]
+    for i in range(len(data.index)):
+        basic = basic_preprocessing(data)
+        punc = clean_punc(basic)
+        review = spell_check(punc)
+        fin = normalizer(review)
+        lw = loanword_corrector(fin, map)
+        lines.append(lw)
+    print(lines)
+    data['preprocessed_review'] = lines
+    print(data)
+    save_csv(data,'./data', 'siksin_전처리_test_1108.csv')
+    # csv = read_csv('./data/siksin_1review_test.csv')
+    # print(csv.head())
+#
+# if __name__ == '__main__':
+#     raw = read_csv('./data/siksin_review_1030.csv')
+#     date = transform_datetime_df(raw, 4)
+#     score = rounding_off_scores_df(date, 2)
+#     col = swap_columns_with_num_df(score, 0,1,4,2,3)
+#     save_csv(col, './data', 'siksin_전전처리_1107.csv')

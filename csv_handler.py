@@ -10,7 +10,7 @@ def read_csv(path):  # 따옴표 잊지말기
 
 
 def save_csv(df, path, name):
-    df.to_csv(os.path.join(path, name), header=False, index=False)  # header와 index는 필요하면 True해주기, name 은 .csv필수
+    df.to_csv(os.path.join(path, name), header=True, index=False)  # header와 index는 필요하면 True해주기, name 은 .csv필수
 
 
 def concat_df(*args):
