@@ -93,31 +93,34 @@ from soynlp.normalizer import *
 
 
 
-def basic_preprocessing(data):
+def basic_preprocessing(data): #문장 조각조각
     new = data['review'][i].strip().replace('\r\n', '')
     line = kss.split_sentences(new) #왜 굳이 문장문장 조각낼까?
+    line = ''.join(line).strip()
+    print(line)
     return line #line은 list형태
 
-def clean_punc(list):
+def clean_punc(line): #문장부호같은거 다 삭제
     punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&' + 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ' #웃음같은 자음만 있는거 제거 추가
 
     mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
                      "—": "-", "–": "-", "’": "'", "_": "-", "`": "'", '“': '"', '”': '"', '“': '"', "£": "e",
                      '∞': 'infinity', 'θ': 'theta', '÷': '/', 'α': 'alpha', '•': '.', 'à': 'a', '−': '-', 'β': 'beta',
                      '∅': '', '³': '3', 'π': 'pi', }
-    #------------------------------------------------------문장부호같은거 다 삭제
-    for sent in list:
-        for p in mapping:
-            sent = sent.replace(p, '')
-            # print(mapping[p])
+    # for sent in line:
+    sent = line[:]
+    for p in mapping:
+        sent = sent.replace(p, '')
+    # print(mapping[p])
 
-        for p in punct:
-            sent = sent.replace(p, '')
+    for p in punct:
+        sent = sent.replace(p, '')
 
-        specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': ''}
-        for s in specials:
-            sent = sent.replace(s, '')
-        line = sent.strip() #빈칸 삭제
+    specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': ''}
+    for s in specials:
+        sent = sent.replace(s, '')
+    line = sent.strip() #빈칸 삭제
+    print(line)
     return line
 
 
@@ -159,8 +162,8 @@ def preprocessing_all_in_one(path, name):
         basic = basic_preprocessing(data)
         punc = clean_punc(basic)
         review = spell_check(punc)
-        fin = normalizer(review)
-        lw = loanword_corrector(fin, map)
+        # fin = normalizer(review)
+        lw = loanword_corrector(review, map)
         lines.append(lw)
     # print(lines)
     data['preprocessed_review'] = lines
@@ -176,13 +179,13 @@ if __name__ == '__main__':
         basic = basic_preprocessing(data)
         punc = clean_punc(basic)
         review = spell_check(punc)
-        fin = normalizer(review)
-        lw = loanword_corrector(fin, map)
+        # fin = normalizer(review)
+        lw = loanword_corrector(review, map)
         lines.append(lw)
-    print(lines)
+    # print(lines)
     data['preprocessed_review'] = lines
-    print(data)
-    save_csv(data,'./data', 'siksin_전처리_test_1108.csv')
+    # print(data)
+    save_csv(data,'./data', 'siksin_전처리_test3_1108.csv')
     # csv = read_csv('./data/siksin_1review_test.csv')
     # print(csv.head())
 #
