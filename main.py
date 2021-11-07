@@ -47,9 +47,7 @@ def main(path):
     total_review = remove_after_nan(total_review)
 
     # csv 파일로 저장
-    # save_csv(total_review, path, name)
-    total_review.to_csv('./data/total_pre_reviews.csv', header=True, index=False)
-
+    save_csv(total_review, 'total_pre_reviews.csv')
     return total_review
 
 

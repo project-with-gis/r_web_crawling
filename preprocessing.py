@@ -51,7 +51,7 @@ def prepro_1(line):
 
     return sents
 
-
+# 전처리 진행 후 컬럼에 넣기 전에 리스트만들기
 def prepro_2(review_list):
     after_review_total = []
     for i, one_review in enumerate(review_list):

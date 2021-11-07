@@ -9,8 +9,8 @@ def read_csv(path):  # 따옴표 잊지말기
     return df
 
 
-def save_csv(df, path, name):
-    df.to_csv(os.path.join(path, name), header=False, index=False)  # header와 index는 필요하면 True해주기
+def save_csv(df, name):
+    df.to_csv(os.path.join('data/'+name), header=True, index=False)  # header와 index는 필요하면 True해주기
 
 
 def concat_review_csv(input_path):
