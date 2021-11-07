@@ -12,13 +12,20 @@ import pandas as pd
 
 def main(path):
 
-    # 사이트별 크롤링 함수 실행
-    review_df_di, review_df_go, review_df_na, review_df_si = site_crawling(path)
+    # 사이트별 크롤링 함수 실행 - 전체 사이트 크롤링부터 시작할 때 (최종 project_ver)
+    # review_df_di, review_df_go, review_df_na, review_df_si = site_crawling(path)
+
+    # google만 리뷰데이터 있는 상태에서 전처리하는 코드
+    # - main('data/google_total_reviews_1105.csv') 로 변경
+    review_df =pd.read_csv(path)
+    review_df_di = review_df[0:3].reset_index(drop=True)
+    review_df_go = review_df[3:10].reset_index(drop=True)
+    review_df_na = review_df[11:12].reset_index(drop=True)
+    review_df_si = review_df[22:23].reset_index(drop=True)
 
     # 4사이트 합침
     concat_review = concat_df(review_df_di,review_df_go,review_df_na,review_df_si)
-    del concat_review['Unnamed: 0']
-    # print(concat_review)
+    print(concat_review)
 
     # subset에 컬럼명 적기 (하나여도 리스트로 작성 필수)
     # 데이터의 'review', 'score' null일 경우 해당 행 삭제
@@ -41,12 +48,13 @@ def main(path):
 
     # csv 파일로 저장
     # save_csv(total_review, path, name)
-    total_review.to_csv('./data/total_reviews.csv', header=True, index=False)
+    total_review.to_csv('./data/total_pre_reviews.csv', header=True, index=False)
 
     return total_review
 
 
 if __name__ == '__main__':
-    review_data = main('data/storeInfo_2.csv')
+    review_data = main('data/google_total_reviews_1105.csv') #구글 test
+    # review_data = main('data/storeInfo_2.csv') # 최종 ver
     print(review_data)
 
