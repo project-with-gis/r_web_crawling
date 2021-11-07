@@ -25,17 +25,19 @@ def main(path):
     total_review = remove_nan(concat_review, ['review', 'score'])
     # print(total_review)
 
+
     # 데이터 전처리
-    # sentence_tokenized_review에 문장단위로 분리된 corpus가 저장된
     # print(total_review['review'])
-    after_review = []
-    for i in range(len(total_review['review'])):
-        after = prepro(total_review['review'][i])
-        after_review.append(after)
-        # print(after_review)
+    after_review_total=[]
+    for i, one_review in enumerate(total_review['review']):
+        after_review = prepro(one_review)
+        after_review_total.append(after_review)
+
+    print(after_review_total)
+
 
     # review 파일에 전처리 컬럼 추가
-    total_review['after_review'] = after_review
+    total_review['after_review'] = after_review_total
     # print(total_review)
 
     #전처리 후 리뷰가 '' 비어있는 상태인 행 삭제
