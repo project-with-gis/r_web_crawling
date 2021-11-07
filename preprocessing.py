@@ -7,6 +7,8 @@ from pykospacing import spacing
 from soynlp.normalizer import *
 
 # # 0.형식변환 및 결측값 제거 # #
+# 형식 변환 함수
+# 형식 변환 후 결측치 제거 예정
 def form_change(df):
     df.columns = ['store_id', 'portal_id', 'score', 'review', 'date']
 
@@ -14,9 +16,9 @@ def form_change(df):
     df = Score_roundUp(df)
     df = change_date(df)
 
-    df = df.to_csv('t_naver_review.csv')
+    new_df = df.to_csv('t_naver_review.csv')
 
-    return df
+    return new_df
 
 # 평점 반올림 하는 함수
 def Score_roundUp(df):
@@ -73,13 +75,13 @@ def del_nan(new_df):
 
     return df
 
+
 # # 1.Basic Preprocessing # #
 def tokenizer(review):
     sentence_tokenized_text = []
-    for i, line in enumerate(review):
-        line = line.strip()
-        for sent in kss.split_sentences(line):
-            sentence_tokenized_text.append(sent.strip())
+    review = review.strip()
+    for sent in kss.split_sentences(review):
+        sentence_tokenized_text.append(sent.strip())
 
     cleaned_corpus = []
     for sent in sentence_tokenized_text:
