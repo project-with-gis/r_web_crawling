@@ -66,7 +66,8 @@ def clean_text(texts):
         review = re.sub(emoji_pattern, '', review)  # 이모티콘제거
         review = re.sub(r'([ㄱ-ㅎㅏ-ㅣ]+)', '', review)
         review = re.sub(r'\d+', '', str(review))  # remove number ## 숫자제거
-        #review = review.lower()  # lower case ## 소문자로 바꾸기
+        # review = review.lower()  # lower case ## 소문자로 바꾸기
+        review = re.sub(r'([a-zA-Z]+)', '', review) # 영어제거
         review = re.sub(r'\s+', ' ', review)  # remove extra space ## 공백문자제거
         review = re.sub(r'<[^>]+>', '', review)  # remove Html tags
         review = re.sub(r"^\s+", '', review)  # remove space from start ## ^ : 문자열의 제일 앞 부분과 일치함을 의미
