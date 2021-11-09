@@ -87,7 +87,7 @@ def prepro_2(review_list):
 
     return after_review_total
 
-
+#######
 # 가장 기초적인 전처리
 # html tag 제거
 # 숫자 제거
