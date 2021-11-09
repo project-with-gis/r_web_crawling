@@ -70,7 +70,14 @@ def naver_crawling(path):
 
 
 def siksin_crawling(path):
+    #store_info 파일 읽어오기
     info_df = read_csv(path)
+    #웹사이트 s_link등 가져오기
     store_df = add_siksin_info(info_df)
-    review_df_si = siksin_review_scraping(store_df)
+    #식신 리뷰 크롤링
+    date_df = siksin_review_scraping(store_df)
+    #식신 별점 반올림하기
+    score_df = rounding_off_scores_df(date_df, 3)
+    #식신 데이트 형식 바꾸기(YY-mm-dd)
+    review_df_si = siksin_transform_datetime_df(score_df, 2)
     return review_df_si
