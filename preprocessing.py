@@ -12,6 +12,14 @@ def remove_nan(df,subset):
     df = df.reset_index(drop=True)
     return df
 
+# 전처리 후 ''리뷰가 비어있는 행 삭제
+def remove_after_nan(total_review):
+    for i, after_review in enumerate(total_review['after_review']):
+        if after_review == '':
+            total_review = total_review.drop(total_review.index[i])
+            total_review.reset_index(drop=True)
+    return total_review
+
 # 식신 사이트 date 형식변환
 def siksin_transform_datetime_df(df, int):
     date = df.iloc[:, int].astype(str)
@@ -77,7 +85,7 @@ def prepro(review_list):
 
     return after_review_total
 
-#######
+
 # 가장 기초적인 전처리
 # html tag 제거
 # 숫자 제거
@@ -95,7 +103,7 @@ def spell_check_text(texts): # 한 댓글에 대한 문장들
     spelled_sent = spell_checker.check(texts) # 띄어쓰기, 맞춤법
     checked_sent = spelled_sent.checked
     normalized_sent = repeat_normalize(checked_sent) # 반복되는 이모티콘이나 자모를 normalization
-    for lownword in lownword_map: # 왜래어 바꿔줌 (miss spell -> origin spell)
+    for lownword in lownword_map: # 외래어 바꿔줌 (miss spell -> origin spell)
         normalized_sent = normalized_sent.replace(lownword, lownword_map[lownword])
     corpus = normalized_sent
 
@@ -155,6 +163,5 @@ def clean_text(line):
     review = emoji_pattern.sub(r'', review) #이모지 제거
 
     return review
-
 
 
