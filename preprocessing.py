@@ -6,6 +6,11 @@ import pandas as pd
 from hanspell import spell_checker
 from soynlp.normalizer import *
 
+# 특정행을 기준으로 null값이 있으면 해당 행을 삭제
+def remove_nan(df,subset):
+    df.dropna(subset=subset, inplace=True)
+    df = df.reset_index(drop=True)
+    return df
 
 # 식신 사이트 날짜 먼저 형식 바꾸고 컬럼위치 바꾸기 주의
 def siksin_transform_datetime_df(df, int):
@@ -139,3 +144,5 @@ def clean_text(texts):
         review = re.sub(emoji_pattern, "", review)
         corpus.append(review)
     return corpus
+
+
