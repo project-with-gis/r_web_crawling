@@ -50,7 +50,7 @@ def diningcode_crawling(path):
 
 def main(path):  # branch의 메인함수
     review_df = read_csv(path)  # 크롤링 결과 파일의 path 넣기
-    review_df = review_df[333:500]
+    #review_df = review_df[333:500]
     review_df_da = delete_null(review_df)  # 리뷰없는거 제거
     # 전처리 시작
     pre_review = []
@@ -61,7 +61,7 @@ def main(path):  # branch의 메인함수
         spell_preprocessed_corpus = spell_check_text(basic_preprocessed_corpus)
         pre_review.append(spell_preprocessed_corpus)
     review_df_da['preprocessed_review'] = pre_review  # 전처리 컬럼에 추가
-    # save_csv(review_df_da, "diningcode_전처리_1108.csv")
+    save_csv(review_df_da, "diningcode_전처리_1109.csv")
 
     return review_df_da
 

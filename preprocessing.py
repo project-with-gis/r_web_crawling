@@ -13,10 +13,9 @@ def basic_check(review):  # 한 행마다 실행되도록. 이 함수가 받아�
     #     sentence_tokenized_text.append(sent.strip())
 
     review = review.strip() # 중간에 있는 \n 제거 안됨
-    # 엔터를 ''공백으로 변경해서 제거할것임
-    rez = []
+    rez = [] # 이스케이프시퀀스, 유니코드문자값 제거
     for x in review:
-        rez.append(x.replace("\n", "").replace("\r", "")) # rez 자체에는 ['안','녕','하', ...] 이런 식이라서 다시 다 합쳐줘야함
+        rez.append(x.replace("\n", "").replace("\r", "").replace("\u200b", "")) # rez 자체에는 ['안','녕','하', ...] 이런 식이라서 다시 다 합쳐줘야함
     reviewstr = ''
     for x in rez:
         reviewstr += x
@@ -65,8 +64,9 @@ def clean_text(texts):
         review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\-\|\.\:\;\!\-\,\_\~\$\'\"]', '', str(texts[i]))
         review = re.sub(emoji_pattern, '', review)  # 이모티콘제거
         review = re.sub(r'([ㄱ-ㅎㅏ-ㅣ]+)', '', review)
-        review = re.sub(r'\d+', '', str(review))  # remove number ## 숫자제거
+        # review = re.sub(r'\d+', '', str(review))  # remove number ## 숫자제거
         # review = review.lower()  # lower case ## 소문자로 바꾸기
+
         review = re.sub(r'([a-zA-Z]+)', '', review) # 영어제거
         review = re.sub(r'\s+', ' ', review)  # remove extra space ## 공백문자제거
         review = re.sub(r'<[^>]+>', '', review)  # remove Html tags
