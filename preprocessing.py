@@ -1,4 +1,10 @@
 from dateutil.parser import parse
+import re
+import os
+import datetime
+import pandas as pd
+from hanspell import spell_checker
+from soynlp.normalizer import *
 
 
 # 식신 사이트 날짜 먼저 형식 바꾸고 컬럼위치 바꾸기 주의
@@ -11,7 +17,7 @@ def siksin_transform_datetime_df(df, int):
     # print(df.iloc[:, int])
     return df
 
-#네이버사이트 date 형식변환
+# 네이버사이트 date 형식변환
 def naver_transform_datetime_df(df):
     # 요일 제거
     for i, line in enumerate(df['date']):
@@ -75,6 +81,17 @@ def spell_check_text(texts): # 한 댓글에 대한 문장들
     print(corpus)
     return corpus
 
+def make_dictionary():
+    lownword_map = {}
+    lownword_data = open('data/confused_loanwords.txt', 'r', encoding='utf-8')
+    lines = lownword_data.readlines()
+    for line in lines:
+        line = line.strip()
+        miss_spell = line.split('\t')[0]
+        ori_word = line.split('\t')[1]
+        lownword_map[miss_spell] = ori_word
+    return lownword_map
+
 def clean_punc(line): #문장부호같은거 다 삭제
     punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&' + 'ㄱ-ㅎ' + 'ㅏ-ㅣ' #웃음같은 자음만 있는거 제거 추가
 
@@ -97,3 +114,28 @@ def clean_punc(line): #문장부호같은거 다 삭제
     line = sent.strip() #빈칸 삭제
     print(type(line))
     return line
+
+def clean_text(texts):
+    corpus = []
+    for i in range(0, len(texts)):
+        review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\-\|\.\:\;\!\-\,\_\~\$\'\☆\★\♡\♥\^\"]', '',
+                        str(texts[i]))  # remove punctuation
+        review = re.sub(r'([ㄱ-ㅎㅏ-ㅣ]+)', '', review)
+        review = re.sub(r'\s+', ' ', review)  # remove extra space
+        review = re.sub(r'<[^>]+>', '', review)  # remove Html tags
+        review = re.sub(r'\s+', ' ', review)  # remove spaces
+        review = re.sub(r"^\s+", '', review)  # remove space from start
+        review = re.sub(r'\s+$', '', review)  # remove space from the end
+        # review = re.sub(r'\d+','', review)  # remove number : 숫자를 삭제하면 의미가 이상해져서 사용x
+        # review = review.lower() # lower case
+
+        # 이모티콘 제거
+        emoji_pattern = re.compile("["
+                                   u"\U0001F600-\U0001F64F"  # emoticons
+                                   u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                                   u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                                   u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                                   "]+", flags=re.UNICODE)
+        review = re.sub(emoji_pattern, "", review)
+        corpus.append(review)
+    return corpus
