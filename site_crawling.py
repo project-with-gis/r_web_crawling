@@ -61,4 +61,7 @@ def naver_crawling(path):
   return review_df_na
 
 def siksin_crawling(path):
-    return 1
+    info_df = read_csv(path)
+    store_df = add_siksin_info(info_df)
+    review_df_si = siksin_review_scraping(store_df)
+    return review_df_si
