@@ -7,14 +7,11 @@ from hanspell import spell_checker
 from soynlp.normalizer import *
 
 
-# 식신 사이트 날짜 먼저 형식 바꾸고 컬럼위치 바꾸기 주의
+# 식신 사이트 date 형식변환
 def siksin_transform_datetime_df(df, int):
     date = df.iloc[:, int].astype(str)
     date = date.str.split(" ")
     df.iloc[:, int] = date.str.get(0)
-    # df.iloc[:, int] = df.iloc[:, int].apply(lambda _: datetime.strptime(_, "%Y-%m-%d"))
-    # df.iloc[:, int] = pd.to_datetime(df.iloc[:, int], format="%Y-%m-%d")
-    # print(df.iloc[:, int])
     return df
 
 # 네이버사이트 date 형식변환
@@ -23,7 +20,6 @@ def naver_transform_datetime_df(df):
     for i, line in enumerate(df['date']):
         line = line.rstrip('.월화수목금토일')
         df['date'][i] = line
-
     # 날짜 변환
     for i in range(len(df)):
       a = parse(df['date'][i], yearfirst=True)
@@ -42,12 +38,12 @@ def google_eng_transfer_del(google_review_data):
     return google_review_data
 
 
-def swap_columns_with_name_df(df, *args): # (*args)에는 원하는 columns 이름 순서대로(따옴표 잊지말기)
-    df = df[[*args]]
-    # print(df.head())
-    return df
+# def swap_columns_with_name_df(df, *args): # (*args)에는 원하는 columns 이름 순서대로(따옴표 잊지말기)
+#     df = df[[*args]]
+#     # print(df.head())
+#     return df
 
-
+# 컬럼위치조정
 def swap_columns_with_num_df(df, *args): # (*args)에는 원하는 columns index순서대로
     col = df.columns.to_numpy()
     col = col[[*args]]
@@ -55,6 +51,7 @@ def swap_columns_with_num_df(df, *args): # (*args)에는 원하는 columns index
     # print(df.head())
     return df
 
+# 평점 반올림해주는 함수
 def rounding_off_scores_df(df, num):
     num = int(num)
     score = df.iloc[:, num]
@@ -63,7 +60,7 @@ def rounding_off_scores_df(df, num):
     return df
 
 
-####################################################
+#######################공통으로쓰는 전처리 함수#############################
 def basic_check(review):  # 한 행마다 실행되도록. 이 함수가 받아오는건 하나의 리뷰
     cleaned_corpus = clean_punc(review)
     basic_preprocessed_corpus = clean_text(cleaned_corpus)
@@ -78,7 +75,6 @@ def spell_check_text(texts): # 한 댓글에 대한 문장들
         normalized_sent = normalized_sent.replace(lownword, lownword_map[lownword])
     corpus = normalized_sent
 
-    print(corpus)
     return corpus
 
 def make_dictionary():
@@ -92,50 +88,45 @@ def make_dictionary():
         lownword_map[miss_spell] = ori_word
     return lownword_map
 
-def clean_punc(line): #문장부호같은거 다 삭제
-    punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&' + 'ㄱ-ㅎ' + 'ㅏ-ㅣ' #웃음같은 자음만 있는거 제거 추가
+def clean_punc(texts): #문장부호같은거 다 삭제
+    punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
 
-    mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
+    punct_mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
                      "—": "-", "–": "-", "’": "'", "_": "-", "`": "'", '“': '"', '”': '"', '“': '"', "£": "e",
                      '∞': 'infinity', 'θ': 'theta', '÷': '/', 'α': 'alpha', '•': '.', 'à': 'a', '−': '-', 'β': 'beta',
                      '∅': '', '³': '3', 'π': 'pi', }
-    # for sent in line:
-    sent = line[:]
-    for p in mapping:
-        sent = sent.replace(p, '')
-    # print(mapping[p])
+
+    for p in punct_mapping:
+        texts = texts.replace(p, punct_mapping[p])  # punct_mapping에 있는 변수가 있으면 대응되는걸로 변경되도록 한다.
 
     for p in punct:
-        sent = sent.replace(p, '')
+        texts = texts.replace(p, '')
 
-    specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': ''}
+    specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': '', '\r': ''} # 대체하고싶은거 알아서 추가하기
     for s in specials:
-        sent = sent.replace(s, '')
-    line = sent.strip() #빈칸 삭제
-    print(type(line))
-    return line
+        texts = texts.replace(s, specials[s])
+    texts = texts.strip() #빈칸 삭제
+
+    return texts
 
 def clean_text(texts):
-    corpus = []
-    for i in range(0, len(texts)):
-        review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\-\|\.\:\;\!\-\,\_\~\$\'\☆\★\♡\♥\^\"]', '',
-                        str(texts[i]))  # remove punctuation
-        review = re.sub(r'([ㄱ-ㅎㅏ-ㅣ]+)', '', review)
-        review = re.sub(r'\s+', ' ', review)  # remove extra space
-        review = re.sub(r'<[^>]+>', '', review)  # remove Html tags
-        review = re.sub(r'\s+', ' ', review)  # remove spaces
-        review = re.sub(r"^\s+", '', review)  # remove space from start
-        review = re.sub(r'\s+$', '', review)  # remove space from the end
-        # review = re.sub(r'\d+','', review)  # remove number : 숫자를 삭제하면 의미가 이상해져서 사용x
-        # review = review.lower() # lower case
+    review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\-\|\.\:\;\!\-\,\_\~\$\'\☆\★\♡\♥\^\"]', '', texts)  # remove punctuation
+    review = re.sub(r'([ㄱ-ㅎㅏ-ㅣ]+)', '', review)
+    review = re.sub(r'\s+', ' ', review)  # remove extra space
+    review = re.sub(r'<[^>]+>', '', review)  # remove Html tags
+    review = re.sub(r'\s+', ' ', review)  # remove spaces
+    review = re.sub(r"^\s+", '', review)  # remove space from start
+    review = re.sub(r'\s+$', '', review)  # remove space from the end
+    # review = re.sub(r'\d+','', review)  # remove number : 숫자를 삭제하면 의미가 이상해져서 사용x
+    # review = review.lower() # lower case
 
-        # 이모티콘 제거
-        emoji_pattern = re.compile("["
-                                   u"\U0001F600-\U0001F64F"  # emoticons
-                                   u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-                                   u"\U0001F680-\U0001F6FF"  # transport & map symbols
-                                   u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-                                   "]+", flags=re.UNICODE)
-        review = re.sub(emoji_pattern, "", review)
-        corpus.append(review)
+    # 이모티콘 제거
+    emoji_pattern = re.compile("["
+                                u"\U0001F600-\U0001F64F"  # emoticons
+                                u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                                u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                                u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                                "]+", flags=re.UNICODE)
+    corpus = re.sub(emoji_pattern, "", review)
     return corpus
+
