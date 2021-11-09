@@ -52,13 +52,22 @@ def google_crawling(path):
 def naver_crawling(path):
   # store_info 파일 읽어오기
   info_df = pd.read_csv(path)
+
   # n_link 크롤링
   link_df = naver_store_id(info_df)
+
   # 네이버 리뷰 크롤링
-  review_df_na = naver_review_crawling(link_df)
+  review_df = naver_review_crawling(link_df)
+
+  change_df = swap_columns_with_num_df(review_df, 0,1,4,3,2) # 컬럼순서 변경
+  del_df = remove_nan(change_df, ['reveiw','score']) # 결측값 제거
+  round_df = rounding_off_scores_df(del_df,3) # 평점 반올림
+  review_df_na = naver_transform_datetime_df(round_df) # 날짜 형태 변환
+
   # # csv 파일로 저장
   # save_csv(review_df_na, path, name)
   return review_df_na
+
 
 def siksin_crawling(path):
     info_df = read_csv(path)
