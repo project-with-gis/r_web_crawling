@@ -22,7 +22,7 @@ def main(path):
     # google만 리뷰데이터 있는 상태에서 전처리하는 코드
     # - main('data/google_total_reviews_1105.csv') 로 변경
     concat_review =pd.read_csv(path)
-    concat_review = review_df[0:100].reset_index(drop=True)
+    concat_review = concat_review[0:10].reset_index(drop=True)
 
 
     # subset에 컬럼명 적기 (하나여도 리스트로 작성 필수)
@@ -48,7 +48,7 @@ def main(path):
     total_review = remove_nan(total_review, ['review'])
 
     # csv 파일로 저장
-    save_csv(total_review, 'total_pre_reviews.csv')
+    # save_csv(total_review, 'total_pre_reviews.csv')
     return total_review
 
 
