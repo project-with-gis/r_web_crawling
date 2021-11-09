@@ -50,7 +50,25 @@ def google_crawling(path):
 
 # 네이버 리뷰 크롤링 함수
 def naver_crawling(path):
-    return 1
+  # store_info 파일 읽어오기
+  info_df = pd.read_csv(path)
+  # n_link 크롤링
+  link_df = naver_store_id(info_df)
+  # 네이버 리뷰 크롤링
+  review_df_na = naver_review_crawling(link_df)
+  # # csv 파일로 저장
+  # save_csv(review_df_na, path, name)
+  return review_df_na
 
 def siksin_crawling(path):
-    return 1
+    #store_info 파일 읽어오기
+    info_df = read_csv(path)
+    #웹사이트 s_link등 가져오기
+    store_df = add_siksin_info(info_df)
+    #식신 리뷰 크롤링
+    date_df = siksin_review_scraping(store_df)
+    #식신 별점 반올림하기
+    score_df = rounding_off_scores_df(date_df, 3)
+    #식신 데이트 형식 바꾸기(YY-mm-dd)
+    review_df_si = siksin_transform_datetime_df(score_df, 2)
+    return review_df_si
