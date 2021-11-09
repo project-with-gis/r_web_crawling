@@ -134,25 +134,27 @@ def clean_punc(texts): #문장부호같은거 다 삭제
 
     return texts
 
-def clean_text(texts):
-    review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\-\|\.\:\;\!\-\,\_\~\$\'\☆\★\♡\♥\^\"]', '', texts)  # remove punctuation
-    review = re.sub(r'([ㄱ-ㅎㅏ-ㅣ]+)', '', review)
-    review = re.sub(r'\s+', ' ', review)  # remove extra space
-    review = re.sub(r'<[^>]+>', '', review)  # remove Html tags
-    review = re.sub(r'\s+', ' ', review)  # remove spaces
-    review = re.sub(r"^\s+", '', review)  # remove space from start
-    review = re.sub(r'\s+$', '', review)  # remove space from the end
-    # review = re.sub(r'\d+','', review)  # remove number : 숫자를 삭제하면 의미가 이상해져서 사용x
-    # review = review.lower() # lower case
-
-    # 이모티콘 제거
+def clean_text(line):
     emoji_pattern = re.compile("["
-                                u"\U0001F600-\U0001F64F"  # emoticons
-                                u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-                                u"\U0001F680-\U0001F6FF"  # transport & map symbols
-                                u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-                                "]+", flags=re.UNICODE)
-    corpus = re.sub(emoji_pattern, "", review)
-    return corpus
+            u"\U0001F600-\U0001F64F"  # emoticons
+            u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+            u"\U0001F680-\U0001F6FF"  # transport & map symbols
+            u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                               "]+", flags=re.UNICODE)
+    review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',str(line)) #remove punctuation
+    # review = re.sub(r'\d+','', review)# remove number# remove number
+    # review = review.lower() #lower case
+    review = re.sub(r'~', '', review)  #50~60대 에서 ~ 제거
+    review = re.sub(r'[ㄱ-ㅎㅏ-ㅣ]', '', review)  # 한글 ㅎㅎ,ㅜ,ㅣ 등 오탈자 제거
+    review = re.sub(r'[a-zA-Z]', '', review) #영어 제거
+    review = re.sub(r'\s+', ' ', review) #remove extra space
+    review = re.sub(r'<[^>]+>','',review) #remove Html tags
+    review = re.sub(r'\s+', ' ', review) #remove spaces
+    review = re.sub(r"^\s+", '', review) #remove space from start
+    review = re.sub(r'\s+$', '', review) #remove space from the end
+    review = emoticon_normalize(review, num_repeats=2) #하하, 이모티콘 등 제거
+    review = emoji_pattern.sub(r'', review) #이모지 제거
+
+    return review
 
 
