@@ -37,16 +37,16 @@ def prepro_1(line):
 
     # 띄어쓰기, 맞춤법 검사
     checked_sent=(sent_check(basic_preprocessed_corpus))
-    # print(checked_sent)
+    print(checked_sent)
     # print(len(checked_sent))
 
     prepro_sent = lownword_check(checked_sent)
-    sents=''
-    for sent in prepro_sent:
-        sents += sent
-    # print("들어가기전",sents)
+    # sents=''
+    # for sent in prepro_sent:
+    #     sents += sent
+    print("들어가기전",prepro_sent)
 
-    return sents
+    return prepro_sent
 
 # 전처리 진행 후 컬럼에 넣기 전에 리스트만들기
 def prepro_2(review_list):

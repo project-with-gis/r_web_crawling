@@ -25,7 +25,7 @@ def main(path):
 
     # 4사이트 합침
     concat_review = concat_df(review_df_di,review_df_go,review_df_na,review_df_si)
-    print(concat_review)
+    # print(concat_review)
 
     # subset에 컬럼명 적기 (하나여도 리스트로 작성 필수)
     # 데이터의 'review', 'score' null일 경우 해당 행 삭제
