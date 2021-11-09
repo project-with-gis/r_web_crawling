@@ -94,10 +94,10 @@ from soynlp.normalizer import *
 
 def basic_preprocessing(data): #문장 조각조각
     # print(data['review'][i]) #줄바꿈 확인용
-    line = data['review'][i].strip().replace('\r', '').replace('\n', '') #엔터미리 제거, \r\n, \n 상관없이 가능
+    line = list(data['review'][i].strip().replace('\r', '').replace('\n', '')) #엔터미리 제거, \r\n, \n 상관없이 가능
     # line = kss.split_sentences(new) #왜 굳이 문장문장 조각낼까?
     line = ''.join(line).strip()
-    print(line)
+    # print(type(line))
     return line #line은 list형태
 
 
@@ -198,8 +198,8 @@ if __name__ == '__main__': #한국어 전처리 메인함수
     # preprocessing_all_in_one('./data', 'siksin_전처리_1108')
     lines = []
     map = loanword_dic_open()
-    data = read_csv('./data/siksin_전전처리_1107.csv')[:10]
-    data = delete_row(data)
+    data = read_csv('./data/siksin_전전처리_1107.csv')
+    # data = delete_row(data)
     for i in tqdm(range(len(data.index))):
         basic = basic_preprocessing(data)
         punc = clean_punc(basic)
@@ -210,7 +210,7 @@ if __name__ == '__main__': #한국어 전처리 메인함수
     # print(lines)
     data['preprocessed_review'] = lines
     print(data)
-#     save_csv(data,'./data', 'diningcode_전처리_테스트_23개.csv')
+    save_csv(data,'./data', 'siksin_전처리_1109.csv')
     # csv = read_csv('./data/siksin_1review_test.csv')
     # print(csv.head())
 #
