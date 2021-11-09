@@ -6,6 +6,11 @@ import pandas as pd
 from hanspell import spell_checker
 from soynlp.normalizer import *
 
+# 특정행을 기준으로 null값이 있으면 해당 행을 삭제
+def remove_nan(df,subset):
+    df.dropna(subset=subset, inplace=True)
+    df = df.reset_index(drop=True)
+    return df
 
 # 식신 사이트 날짜 먼저 형식 바꾸고 컬럼위치 바꾸기 주의
 def siksin_transform_datetime_df(df, int):
@@ -64,11 +69,40 @@ def rounding_off_scores_df(df, num):
 
 
 ####################################################
+
+# 전처리과정 전부 진행하는 함수
+def prepro_1(line):
+
+    after_basic_check = basic_check(line)
+    print("after_basic_check",after_basic_check)
+
+    after_spell_check = spell_check_text(after_basic_check)
+    print("after_spell_check",after_spell_check)
+
+    return after_spell_check
+
+# 리뷰하나가 전체 전처리과정을 돌고 -> 리스트에 전처리 후 리뷰들이 하나씩 리스트에 담긴다
+def prepro_2(review_list):
+    after_review_total = []
+    for i, one_review in enumerate(review_list):
+        after_review = prepro_1(one_review)
+        after_review_total.append(after_review)
+
+    return after_review_total
+
+
+# 가장 기초적인 전처리
+# html tag 제거
+# 숫자 제거
+# Lowercasing
+# "@%*=()/+ 와 같은 punctuation 제거
 def basic_check(review):  # 한 행마다 실행되도록. 이 함수가 받아오는건 하나의 리뷰
     cleaned_corpus = clean_punc(review)
     basic_preprocessed_corpus = clean_text(cleaned_corpus)
     return basic_preprocessed_corpus
 
+# 사전 기반의 오탈자 교정
+# 줄임말 원형 복원 (e.g. I'm not happy -> I am not happy)
 def spell_check_text(texts): # 한 댓글에 대한 문장들
     lownword_map = make_dictionary() # 외래어 사전
     spelled_sent = spell_checker.check(texts) # 띄어쓰기, 맞춤법
@@ -139,3 +173,5 @@ def clean_text(texts):
         review = re.sub(emoji_pattern, "", review)
         corpus.append(review)
     return corpus
+
+
