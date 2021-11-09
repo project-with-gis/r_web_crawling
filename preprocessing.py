@@ -56,3 +56,21 @@ def rounding_off_scores_df(df, num):
     # print(df.iloc[:, num].head(21))
     return df
 
+
+####################################################
+def basic_check(review):  # 한 행마다 실행되도록. 이 함수가 받아오는건 하나의 리뷰
+    cleaned_corpus = clean_punc(review)
+    basic_preprocessed_corpus = clean_text(cleaned_corpus)
+    return basic_preprocessed_corpus
+
+def spell_check_text(texts): # 한 댓글에 대한 문장들
+    lownword_map = make_dictionary() # 외래어 사전
+    spelled_sent = spell_checker.check(texts) # 띄어쓰기, 맞춤법
+    checked_sent = spelled_sent.checked
+    normalized_sent = repeat_normalize(checked_sent) # 반복되는 이모티콘이나 자모를 normalization
+    for lownword in lownword_map: # 왜래어 바꿔줌 (miss spell -> origin spell)
+        normalized_sent = normalized_sent.replace(lownword, lownword_map[lownword])
+    corpus = normalized_sent
+
+    print(corpus)
+    return corpus
