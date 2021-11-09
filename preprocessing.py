@@ -4,6 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from csv_handler import read_csv, save_csv
+from pre2 import basic_preprocessing
 
 
 def remove_english(df):
@@ -92,17 +93,18 @@ from soynlp.normalizer import *
 
 
 
-def basic_preprocessing(data): #문장 조각조각
+def basic_preprocessing(data,i): #문장 조각조각
     # print(data['review'][i]) #줄바꿈 확인용
-    line = list(data['review'][i].strip().replace('\r', '').replace('\n', '')) #엔터미리 제거, \r\n, \n 상관없이 가능
+    line = list(str(data['review'][i]))
+    # print(i)#엔터미리 제거, \r\n, \n 상관없이 가능
     # line = kss.split_sentences(new) #왜 굳이 문장문장 조각낼까?
     line = ''.join(line).strip()
-    # print(type(line))
+    print(type(line))
     return line #line은 list형태
 
 
 def clean_punc(line): #문장부호같은거 다 삭제
-    punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&' + 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ' + 'ㅏㅑㅓㅕㅗㅛㅜㅠㅡㅣㅐㅔㅢㅟㅚㅞㅙㅝㅘ' #웃음같은 자음만 있는거 제거 추가
+    punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&' + 'ㄱ-ㅎ' + 'ㅏ-ㅣ' #웃음같은 자음만 있는거 제거 추가
 
     mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
                      "—": "-", "–": "-", "’": "'", "_": "-", "`": "'", '“': '"', '”': '"', '“': '"', "£": "e",
@@ -121,7 +123,7 @@ def clean_punc(line): #문장부호같은거 다 삭제
     for s in specials:
         sent = sent.replace(s, '')
     line = sent.strip() #빈칸 삭제
-    print(line)
+    print(type(line))
     return line
 
 
@@ -129,12 +131,13 @@ def spell_check(line):
     spelled_sent = spell_checker.check(line)
     checked_sent = spelled_sent.checked
 
-    # print(checked_sent)
+    print(type(checked_sent))
     return checked_sent
 
 
 def normalizer(sent):
     review = repeat_normalize(sent, num_repeats=2)
+    print(type(review))
     return review
 
 
@@ -148,13 +151,14 @@ def loanword_dic_open():
         miss_spell = s.split('\t')[0]
         ori_word = s.split('\t')[1]
         loanword_map[miss_spell] = ori_word
-    # print(loanword_map)
+    print(type(loanword_map))
     return loanword_map
 
 
 def loanword_corrector(sent, map):
     for loan in map:
-        corr = sent.replace(loan, map[loan])
+        corr = sent.replace(loan, map[loan]).rstrip()
+    print(type(corr))
     return corr
 
 
@@ -163,7 +167,7 @@ def preprocessing_all_in_one(path, name):
     map = loanword_dic_open()
     data = read_csv('./data/siksin_전전처리_1107.csv', index=False)[:200]
     for i in tqdm(range(len(data.index))):
-        basic = basic_preprocessing(data)
+        basic = basic_preprocessing(data,i)
         punc = clean_punc(basic)
         review = spell_check(punc)
         # fin = normalizer(review)
@@ -198,10 +202,11 @@ if __name__ == '__main__': #한국어 전처리 메인함수
     # preprocessing_all_in_one('./data', 'siksin_전처리_1108')
     lines = []
     map = loanword_dic_open()
-    data = read_csv('./data/siksin_전전처리_1107.csv')
+    data = read_csv('./data/siksin_전전처리_1107.csv')[:2]
     # data = delete_row(data)
     for i in tqdm(range(len(data.index))):
-        basic = basic_preprocessing(data)
+        basic = basic_preprocessing(data,i)
+        # print(i)
         punc = clean_punc(basic)
         review = spell_check(punc)
         fin = normalizer(review)
