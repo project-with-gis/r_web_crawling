@@ -50,7 +50,15 @@ def google_crawling(path):
 
 # 네이버 리뷰 크롤링 함수
 def naver_crawling(path):
-    return 1
+  # store_info 파일 읽어오기
+  info_df = pd.read_csv(path)
+  # n_link 크롤링
+  link_df = naver_store_id(info_df)
+  # 네이버 리뷰 크롤링
+  review_df_na = naver_review_crawling(link_df)
+  # # csv 파일로 저장
+  # save_csv(review_df_na, path, name)
+  return review_df_na
 
 def siksin_crawling(path):
     return 1
