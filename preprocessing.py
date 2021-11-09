@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 import pandas as pd
@@ -99,45 +100,64 @@ def basic_preprocessing(data,i): #문장 조각조각
     # print(i)#엔터미리 제거, \r\n, \n 상관없이 가능
     # line = kss.split_sentences(new) #왜 굳이 문장문장 조각낼까?
     line = ''.join(line).strip()
-    print(type(line))
+    # print(type(line))
     return line #line은 list형태
 
 
-def clean_punc(line): #문장부호같은거 다 삭제
-    punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&' + 'ㄱ-ㅎ' + 'ㅏ-ㅣ' #웃음같은 자음만 있는거 제거 추가
+def clean_punc(texts): #문장부호같은거 다 삭제
+    punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
 
-    mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
+    punct_mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
                      "—": "-", "–": "-", "’": "'", "_": "-", "`": "'", '“': '"', '”': '"', '“': '"', "£": "e",
                      '∞': 'infinity', 'θ': 'theta', '÷': '/', 'α': 'alpha', '•': '.', 'à': 'a', '−': '-', 'β': 'beta',
                      '∅': '', '³': '3', 'π': 'pi', }
-    # for sent in line:
-    sent = line[:]
-    for p in mapping:
-        sent = sent.replace(p, '')
-    # print(mapping[p])
+
+    for p in punct_mapping:
+        texts = texts.replace(p, punct_mapping[p])  # punct_mapping에 있는 변수가 있으면 대응되는걸로 변경되도록 한다.
 
     for p in punct:
-        sent = sent.replace(p, '')
+        texts = texts.replace(p, '')
 
-    specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': ''}
+    specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': '', '\r': ''} # 대체하고싶은거 알아서 추가하기
     for s in specials:
-        sent = sent.replace(s, '')
-    line = sent.strip() #빈칸 삭제
-    print(type(line))
-    return line
+        texts = texts.replace(s, specials[s])
+    texts = texts.strip() #빈칸 삭제
 
+    return texts
+
+def clean_text(texts):
+    review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\-\|\.\:\;\!\-\,\_\~\$\'\☆\★\♡\♥\^\"]', '', texts)  # remove punctuation ~는 에서로 바꾸는게 낫지 않나
+    review = re.sub(r'([ㄱ-ㅎㅏ-ㅣ]+)', '', review)
+    # review = re.sub('r([a-z]+)', '', review)
+    review = re.sub(r'\s+', ' ', review)  # remove extra space
+    review = re.sub(r'<[^>]+>', '', review)  # remove Html tags
+    review = re.sub(r'\s+', ' ', review)  # remove spaces
+    review = re.sub(r"^\s+", '', review)  # remove space from start
+    review = re.sub(r'\s+$', '', review)  # remove space from the end
+    # review = re.sub(r'\d+','', review)  # remove number : 숫자를 삭제하면 의미가 이상해져서 사용x
+    # review = review.lower() # lower case
+
+    # 이모티콘 제거
+    emoji_pattern = re.compile("["
+                                u"\U0001F600-\U0001F64F"  # emoticons
+                                u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                                u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                                u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                                "]+", flags=re.UNICODE)
+    corpus = re.sub(emoji_pattern, "", review)
+    return corpus
 
 def spell_check(line):
     spelled_sent = spell_checker.check(line)
     checked_sent = spelled_sent.checked
 
-    print(type(checked_sent))
+    # print(type(checked_sent))
     return checked_sent
 
 
 def normalizer(sent):
     review = repeat_normalize(sent, num_repeats=2)
-    print(type(review))
+    # print(type(review))
     return review
 
 
@@ -151,14 +171,14 @@ def loanword_dic_open():
         miss_spell = s.split('\t')[0]
         ori_word = s.split('\t')[1]
         loanword_map[miss_spell] = ori_word
-    print(type(loanword_map))
+    # print(type(loanword_map))
     return loanword_map
 
 
 def loanword_corrector(sent, map):
     for loan in map:
         corr = sent.replace(loan, map[loan]).rstrip()
-    print(type(corr))
+    # print(type(corr))
     return corr
 
 
@@ -202,15 +222,16 @@ if __name__ == '__main__': #한국어 전처리 메인함수
     # preprocessing_all_in_one('./data', 'siksin_전처리_1108')
     lines = []
     map = loanword_dic_open()
-    data = read_csv('./data/siksin_전전처리_1107.csv')[:2]
+    data = read_csv('./data/siksin_전전처리_1107.csv')
     # data = delete_row(data)
     for i in tqdm(range(len(data.index))):
         basic = basic_preprocessing(data,i)
         # print(i)
         punc = clean_punc(basic)
-        review = spell_check(punc)
+        chan = clean_text(punc)
+        review = spell_check(chan)
         fin = normalizer(review)
-        lw = loanword_corrector(review, map)
+        lw = loanword_corrector(fin, map)
         lines.append(lw)
     # print(lines)
     data['preprocessed_review'] = lines
