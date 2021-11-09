@@ -74,3 +74,26 @@ def spell_check_text(texts): # 한 댓글에 대한 문장들
 
     print(corpus)
     return corpus
+
+def clean_punc(line): #문장부호같은거 다 삭제
+    punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&' + 'ㄱ-ㅎ' + 'ㅏ-ㅣ' #웃음같은 자음만 있는거 제거 추가
+
+    mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
+                     "—": "-", "–": "-", "’": "'", "_": "-", "`": "'", '“': '"', '”': '"', '“': '"', "£": "e",
+                     '∞': 'infinity', 'θ': 'theta', '÷': '/', 'α': 'alpha', '•': '.', 'à': 'a', '−': '-', 'β': 'beta',
+                     '∅': '', '³': '3', 'π': 'pi', }
+    # for sent in line:
+    sent = line[:]
+    for p in mapping:
+        sent = sent.replace(p, '')
+    # print(mapping[p])
+
+    for p in punct:
+        sent = sent.replace(p, '')
+
+    specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': ''}
+    for s in specials:
+        sent = sent.replace(s, '')
+    line = sent.strip() #빈칸 삭제
+    print(type(line))
+    return line
