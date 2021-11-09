@@ -60,7 +60,7 @@ def rounding_off_scores_df(df, num):
     return df
 
 
-#######################공통으로쓰는 전처리 함수#############################
+#######################공통으로쓰는 전처리 함수###########################
 def basic_check(review):  # 한 행마다 실행되도록. 이 함수가 받아오는건 하나의 리뷰
     cleaned_corpus = clean_punc(review)
     basic_preprocessed_corpus = clean_text(cleaned_corpus)
