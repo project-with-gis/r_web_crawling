@@ -43,9 +43,7 @@ def google_eng_transfer_del(google_review_data):
     for i, review in enumerate(google_review_data['review']):
         if type(review) != 'str':
             review = str(review)
-        if "번역" in review:
-            google_review_data = google_review_data.drop(google_review_data.index[i])
-        elif "원문" in review:
+        elif "Google 번역 제공" in review:
             google_review_data = google_review_data.drop(google_review_data.index[i])
 
     return google_review_data
@@ -161,6 +159,7 @@ def clean_text(line):
     review = re.sub(r'\s+$', '', review) #remove space from the end
     review = emoticon_normalize(review, num_repeats=2) #하하, 이모티콘 등 제거
     review = emoji_pattern.sub(r'', review) #이모지 제거
+    review = re.sub(r'(번역)', '', review)
 
     return review
 
