@@ -12,6 +12,14 @@ def remove_nan(df,subset):
     df = df.reset_index(drop=True)
     return df
 
+# 전처리 후 ''리뷰가 비어있는 행 삭제
+def remove_after_nan(total_review):
+    for i, after_review in enumerate(total_review['after_review']):
+        if after_review == '':
+            total_review = total_review.drop(total_review.index[i])
+            total_review.reset_index(drop=True)
+    return total_review
+
 # 식신 사이트 date 형식변환
 def siksin_transform_datetime_df(df, int):
     date = df.iloc[:, int].astype(str)
