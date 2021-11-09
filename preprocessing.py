@@ -22,20 +22,17 @@ def remove_after_nan(total_review):
 
 # 전처리과정 전부 진행하는 함수
 def prepro_1(line):
-    sentence_tokenized_review = sentence_tokenized(line)
-    # print(sentence_tokenized_review)
-    # print(len(sentence_tokenized_review))
 
     # 특수문자나 기호 사이 띄어짐
-    cleaned_corpus = clean_punc(sentence_tokenized_review)
-    # print("클린",cleaned_corpus)
+    cleaned_corpus = clean_punc(line)
+    print("클린",cleaned_corpus)
     # print(len(cleaned_corpus))
 
     # 정규표현식을 사용한 특수문자 처리
     basic_preprocessed_corpus = clean_text(cleaned_corpus)
     # for i in range(len(basic_preprocessed_corpus)):
     #     print(basic_preprocessed_corpus[i])
-    # print("베이직",basic_preprocessed_corpus)
+    print("베이직",basic_preprocessed_corpus)
     # print(len(basic_preprocessed_corpus))
 
     # 띄어쓰기, 맞춤법 검사
@@ -74,68 +71,62 @@ def sentence_tokenized(lines):
 
 
 def clean_punc(lines):
-    texts =[]
-    for line in lines:
-        punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
-        punct_mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
-                         "—": "-", "–": "-", "’": "'", "_": "-", "`": "'", '“': '"', '”': '"', '“': '"', "£": "e",
-                         '∞': 'infinity', 'θ': 'theta', '÷': '/', 'α': 'alpha', '•': '.', 'à': 'a', '−': '-', 'β': 'beta',
-                         '∅': '', '³': '3', 'π': 'pi', }
-        for p in punct_mapping:
-            text = line.replace(p, punct_mapping[p])
+    punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
+    punct_mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
+                     "—": "-", "–": "-", "’": "'", "_": "-", "`": "'", '“': '"', '”': '"', '“': '"', "£": "e",
+                     '∞': 'infinity', 'θ': 'theta', '÷': '/', 'α': 'alpha', '•': '.', 'à': 'a', '−': '-', 'β': 'beta',
+                     '∅': '', '³': '3', 'π': 'pi', }
+    for p in punct_mapping:
+        text = lines.replace(p, punct_mapping[p])
 
-        for p in punct:
-            text = text.replace(p, f' {p} ')
+    for p in punct:
+        text = text.replace(p, f' {p} ')
 
-        specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': ''}
-        for s in specials:
-            text = text.replace(s, specials[s])
-        texts.append(text)
+    specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': ''}
+    for s in specials:
+        text = text.replace(s, specials[s])
 
-    # print(texts)
-    return texts
+
+    # print(text)
+    return text
 
 
 
-def clean_text(lines):
-    texts=[]
-    for line in lines:
-        emoji_pattern = re.compile("["
-                u"\U0001F600-\U0001F64F"  # emoticons
-                u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-                u"\U0001F680-\U0001F6FF"  # transport & map symbols
-                u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-                                   "]+", flags=re.UNICODE)
-        review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',str(line)) #remove punctuation
-        # review = re.sub(r'\d+','', review)# remove number# remove number
-        review = review.lower() #lower case
-        review = re.sub(r'~', '', review)  #50~60대 에서 ~ 제거
-        review = re.sub(r'[ㄱ-ㅎㅏ-ㅣ]', '', review)  # 한글 ㅎㅎ,ㅜ,ㅣ 등 오탈자 제거
-        review = re.sub(r'[a-zA-Z]', '', review) #영어 제거
-        # review = re.sub(r'원문', '', review)
-        # review = re.sub(r'Google 번역 제공', '', review)
-        review = re.sub(r'\s+', ' ', review) #remove extra space
-        review = re.sub(r'<[^>]+>','',review) #remove Html tags
-        review = re.sub(r'\s+', ' ', review) #remove spaces
-        review = re.sub(r"^\s+", '', review) #remove space from start
-        review = re.sub(r'\s+$', '', review) #remove space from the end
-        review = emoticon_normalize(review, num_repeats=2) #하하, 이모티콘 등 제거
-        review = emoji_pattern.sub(r'', review) #이모지 제거
-        texts.append(review)
+def clean_text(line):
+    emoji_pattern = re.compile("["
+            u"\U0001F600-\U0001F64F"  # emoticons
+            u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+            u"\U0001F680-\U0001F6FF"  # transport & map symbols
+            u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                               "]+", flags=re.UNICODE)
+    review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',str(line)) #remove punctuation
+    # review = re.sub(r'\d+','', review)# remove number# remove number
+    review = review.lower() #lower case
+    review = re.sub(r'~', '', review)  #50~60대 에서 ~ 제거
+    review = re.sub(r'[ㄱ-ㅎㅏ-ㅣ]', '', review)  # 한글 ㅎㅎ,ㅜ,ㅣ 등 오탈자 제거
+    review = re.sub(r'[a-zA-Z]', '', review) #영어 제거
+    # review = re.sub(r'원문', '', review)
+    # review = re.sub(r'Google 번역 제공', '', review)
+    review = re.sub(r'\s+', ' ', review) #remove extra space
+    review = re.sub(r'<[^>]+>','',review) #remove Html tags
+    review = re.sub(r'\s+', ' ', review) #remove spaces
+    review = re.sub(r"^\s+", '', review) #remove space from start
+    review = re.sub(r'\s+$', '', review) #remove space from the end
+    review = emoticon_normalize(review, num_repeats=2) #하하, 이모티콘 등 제거
+    review = emoji_pattern.sub(r'', review) #이모지 제거
+
     # print(review)
-    return texts
+    return review
 
 
 
 # 맞춤법 검사 및 띄어쓰기
 def sent_check(sents):
-    checked_texts =[]
-    for sent in sents:
-        spelled_sent = spell_checker.check(sent)
-        checked_sent = spelled_sent.checked
-        # print(checked_sent)
-        checked_texts.append(sent)
-    return checked_texts
+    spelled_sent = spell_checker.check(sents)
+    checked_sent = spelled_sent.checked
+    # print(checked_sent)
+
+    return checked_sent
 
 # 외래어
 def lownword():
@@ -153,14 +144,11 @@ def lownword():
 
 def lownword_check(sents):
     lownword_map = lownword()
-    normalized_texts =[]
-    for sent in sents:
-        for l_word in lownword_map:
-            normalized_sent = sent.replace(l_word, lownword_map[l_word])
-        normalized_texts.append(normalized_sent)
-    return normalized_texts
 
+    for l_word in lownword_map:
+        normalized_sent = sents.replace(l_word, lownword_map[l_word])
 
+    return normalized_sent
 
 
 
