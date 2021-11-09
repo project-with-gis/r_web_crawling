@@ -10,7 +10,7 @@ def remove_english(df):
     print("전처리하는 함수")
 
 
-def transform_datetime(path, int): #날짜 먼저 형식 바꾸고 컬럼위치 바꾸기 주의
+def sik_sin_transform_datetime(path, int): #날짜 먼저 형식 바꾸고 컬럼위치 바꾸기 주의
     data = pd.read_csv(path)
     df = pd.DataFrame(data)
     date = df.iloc[:, int].astype(str)
@@ -53,7 +53,7 @@ def rounding_off_scores(path, num):
 #-----------------------------------------------------------(아래)dataframe 기준
 
 
-def transform_datetime_df(df, int): #날짜 먼저 형식 바꾸고 컬럼위치 바꾸기 주의
+def siksin_transform_datetime_df(df, int): #날짜 먼저 형식 바꾸고 컬럼위치 바꾸기 주의
     date = df.iloc[:, int].astype(str)
     date = date.str.split(" ")
     df.iloc[:, int] = date.str.get(0)
@@ -94,8 +94,8 @@ from soynlp.normalizer import *
 
 def basic_preprocessing(data): #문장 조각조각
     # print(data['review'][i]) #줄바꿈 확인용
-    new = data['review'][i].strip().replace('\r', '').replace('\n', '') #엔터미리 제거, \r\n, \n 상관없이 가능
-    line = kss.split_sentences(new) #왜 굳이 문장문장 조각낼까?
+    line = data['review'][i].strip().replace('\r', '').replace('\n', '') #엔터미리 제거, \r\n, \n 상관없이 가능
+    # line = kss.split_sentences(new) #왜 굳이 문장문장 조각낼까?
     line = ''.join(line).strip()
     print(line)
     return line #line은 list형태
@@ -198,7 +198,7 @@ if __name__ == '__main__': #한국어 전처리 메인함수
     # preprocessing_all_in_one('./data', 'siksin_전처리_1108')
     lines = []
     map = loanword_dic_open()
-    data = read_csv('./data/diningcode_review.csv')[:200]
+    data = read_csv('./data/siksin_전전처리_1107.csv')[:10]
     data = delete_row(data)
     for i in tqdm(range(len(data.index))):
         basic = basic_preprocessing(data)
@@ -210,13 +210,14 @@ if __name__ == '__main__': #한국어 전처리 메인함수
     # print(lines)
     data['preprocessed_review'] = lines
     print(data)
-    save_csv(data,'./data', 'diningcode_전처리_테스트_23개.csv')
+#     save_csv(data,'./data', 'diningcode_전처리_테스트_23개.csv')
     # csv = read_csv('./data/siksin_1review_test.csv')
     # print(csv.head())
 #
 # if __name__ == '__main__': #날짜형식, 반올림, 컬럼 순서 바꿔주기 메인함수
-#     raw = read_csv('./data/siksin_review_1030.csv')
-#     date = transform_datetime_df(raw, 4)
+#     raw = read_csv('./data/naver_review.csv')
+#     date = transform_datetime_df(raw, 5)
+#     print(date)
 #     score = rounding_off_scores_df(date, 2)
 #     col = swap_columns_with_num_df(score, 0,1,4,2,3)
 #     save_csv(col, './data', 'siksin_전전처리_1107.csv')
