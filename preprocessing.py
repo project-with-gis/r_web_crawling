@@ -107,13 +107,13 @@ def clean_text(lines):
                 u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
                                    "]+", flags=re.UNICODE)
         review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',str(line)) #remove punctuation
-        review = re.sub(r'\d+','', review)# remove number# remove number
+        # review = re.sub(r'\d+','', review)# remove number# remove number
         review = review.lower() #lower case
         review = re.sub(r'~', '', review)  #50~60대 에서 ~ 제거
         review = re.sub(r'[ㄱ-ㅎㅏ-ㅣ]', '', review)  # 한글 ㅎㅎ,ㅜ,ㅣ 등 오탈자 제거
         review = re.sub(r'[a-zA-Z]', '', review) #영어 제거
-        review = re.sub(r'원문', '', review)
-        review = re.sub(r'Google 번역 제공', '', review)
+        # review = re.sub(r'원문', '', review)
+        # review = re.sub(r'Google 번역 제공', '', review)
         review = re.sub(r'\s+', ' ', review) #remove extra space
         review = re.sub(r'<[^>]+>','',review) #remove Html tags
         review = re.sub(r'\s+', ' ', review) #remove spaces
