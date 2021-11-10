@@ -128,7 +128,7 @@ def clean_punc(texts): #문장부호같은거 다 삭제
 def clean_text(texts):
     review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\-\|\.\:\;\!\-\,\_\~\$\'\☆\★\♡\♥\^\"]', '', texts)  # remove punctuation ~는 에서로 바꾸는게 낫지 않나
     review = re.sub(r'([ㄱ-ㅎㅏ-ㅣ]+)', '', review)
-    # review = re.sub('r([a-z]+)', '', review)
+    review = re.sub('r([a-zA-Z]+)', '', review)
     review = re.sub(r'\s+', ' ', review)  # remove extra space
     review = re.sub(r'<[^>]+>', '', review)  # remove Html tags
     review = re.sub(r'\s+', ' ', review)  # remove spaces
@@ -236,7 +236,7 @@ if __name__ == '__main__': #한국어 전처리 메인함수
     # print(lines)
     data['preprocessed_review'] = lines
     print(data)
-    save_csv(data,'./data', 'siksin_전처리_1109.csv')
+    save_csv(data,'./data', 'siksin_전처리_1110_2.csv')
     # csv = read_csv('./data/siksin_1review_test.csv')
     # print(csv.head())
 #
