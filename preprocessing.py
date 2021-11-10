@@ -43,7 +43,7 @@ def google_eng_transfer_del(google_review_data):
     for i, review in enumerate(google_review_data['review']):
         if type(review) != 'str':
             review = str(review)
-        elif "Google 번역 제공" in review:
+        if "Google 번역 제공" in review:
             google_review_data = google_review_data.drop(google_review_data.index[i])
 
     return google_review_data
@@ -153,7 +153,7 @@ def clean_text(line):
     review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',str(line)) #remove punctuation
     # review = re.sub(r'\d+','', review)# remove number# remove number
     # review = review.lower() #lower case
-    review = re.sub(r'~', '', review)  #50~60대 에서 ~ 제거
+    review = re.sub(r'~', '에서', review)  #50~60대 에서 ~
     review = re.sub(r'[ㄱ-ㅎㅏ-ㅣ]', '', review)  # 한글 ㅎㅎ,ㅜ,ㅣ 등 오탈자 제거
     review = re.sub(r'[a-zA-Z]', '', review) #영어 제거
     review = re.sub(r'\s+', ' ', review) #remove extra space

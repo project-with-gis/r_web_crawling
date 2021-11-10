@@ -4,7 +4,7 @@ import os
 
 
 def read_csv(path):  # 따옴표 잊지말기
-    data = pd.read_csv(path) # 마지막에 .csv 써주기
+    data = pd.read_csv(path,encoding='utf-8-sig') # 마지막에 .csv 써주기
     df = pd.DataFrame(data)
     return df
 
