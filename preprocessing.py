@@ -77,8 +77,12 @@ def rounding_off_scores_df(df, num):
 def prepro(review_list):
     after_review_total = []
     for i, one_review in enumerate(review_list):
+        print(i, "=======================================")
+        print(one_review)
         after_basic_check = basic_check(one_review)
+        print(after_basic_check)
         after_spell_check = spell_check_text(after_basic_check)
+        print(after_spell_check)
         after_review_total.append(after_spell_check)
 
     return after_review_total
@@ -91,46 +95,32 @@ def prepro(review_list):
 # "@%*=()/+ 와 같은 punctuation 제거
 def basic_check(review):  # 한 행마다 실행되도록. 이 함수가 받아오는건 하나의 리뷰
     cleaned_corpus = clean_punc(review)
-    print("클린", cleaned_corpus)
-    # print(len(cleaned_corpus))
-
-    # 정규표현식을 사용한 특수문자 처리
     basic_preprocessed_corpus = clean_text(cleaned_corpus)
-    # for i in range(len(basic_preprocessed_corpus)):
-    #     print(basic_preprocessed_corpus[i])
-    print("베이직", basic_preprocessed_corpus)
-
     return basic_preprocessed_corpus
 
 # 사전 기반의 오탈자 교정
 # 줄임말 원형 복원 (e.g. I'm not happy -> I am not happy)
 def spell_check_text(texts): # 한 댓글에 대한 문장들
-    checked_sent = (sent_check(texts))
+    lownword_map = make_dictionary() # 외래어 사전
+    spelled_sent = spell_checker.check(texts) # 띄어쓰기, 맞춤법
+    checked_sent = spelled_sent.checked
+    normalized_sent = repeat_normalize(checked_sent) # 반복되는 이모티콘이나 자모를 normalization
+    for lownword in lownword_map: # 외래어 바꿔줌 (miss spell -> origin spell)
+        normalized_sent = normalized_sent.replace(lownword, lownword_map[lownword])
+    corpus = normalized_sent
 
-    prepro_sent = lownword_check(checked_sent)
-
-    return prepro_sent
+    return corpus
 
 def make_dictionary():
     lownword_map = {}
-    lownword_data = open('data/confused_loanwords.txt', 'r', encoding='utf-8')  # 외래어 사전 데이터
+    lownword_data = open('data/confused_loanwords.txt', 'r', encoding='utf-8')
     lines = lownword_data.readlines()
-
     for line in lines:
         line = line.strip()
         miss_spell = line.split('\t')[0]
         ori_word = line.split('\t')[1]
         lownword_map[miss_spell] = ori_word
-
     return lownword_map
-
-def lownword_check(sents):
-    lownword_map = make_dictionary()
-
-    for l_word in lownword_map:
-        normalized_sent = sents.replace(l_word, lownword_map[l_word])
-
-    return normalized_sent
 
 def clean_punc(texts): #문장부호같은거 다 삭제
     punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
@@ -144,7 +134,7 @@ def clean_punc(texts): #문장부호같은거 다 삭제
         texts = texts.replace(p, punct_mapping[p])  # punct_mapping에 있는 변수가 있으면 대응되는걸로 변경되도록 한다.
 
     for p in punct:
-        texts = texts.replace(p, '')
+        texts = texts.replace(p, f' {p} ')
 
     specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': '', '\r': ''} # 대체하고싶은거 알아서 추가하기
     for s in specials:
@@ -152,13 +142,6 @@ def clean_punc(texts): #문장부호같은거 다 삭제
     texts = texts.strip() #빈칸 삭제
 
     return texts
-
-def sent_check(sents):
-    spelled_sent = spell_checker.check(sents)
-    checked_sent = spelled_sent.checked
-    # print(checked_sent)
-
-    return checked_sent
 
 def clean_text(line):
     emoji_pattern = re.compile("["
@@ -183,5 +166,4 @@ def clean_text(line):
     review = re.sub(r'(번역)', '', review)
 
     return review
-
 
