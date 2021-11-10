@@ -77,8 +77,12 @@ def rounding_off_scores_df(df, num):
 def prepro(review_list):
     after_review_total = []
     for i, one_review in enumerate(review_list):
+        print(i, "=======================================")
+        print(one_review)
         after_basic_check = basic_check(one_review)
+        print(after_basic_check)
         after_spell_check = spell_check_text(after_basic_check)
+        print(after_spell_check)
         after_review_total.append(after_spell_check)
 
     return after_review_total
@@ -130,7 +134,7 @@ def clean_punc(texts): #문장부호같은거 다 삭제
         texts = texts.replace(p, punct_mapping[p])  # punct_mapping에 있는 변수가 있으면 대응되는걸로 변경되도록 한다.
 
     for p in punct:
-        texts = texts.replace(p, '')
+        texts = texts.replace(p, f' {p} ')
 
     specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': '', '\r': ''} # 대체하고싶은거 알아서 추가하기
     for s in specials:
@@ -162,5 +166,4 @@ def clean_text(line):
     review = re.sub(r'(번역)', '', review)
 
     return review
-
 
