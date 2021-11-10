@@ -14,10 +14,10 @@ def remove_nan(df,subset):
 
 # 전처리 후 ''리뷰가 비어있는 행 삭제
 def remove_after_nan(total_review):
-    for i, after_review in enumerate(total_review['after_review']):
+    for i, after_review in enumerate(total_review['preprocessed_review']):
         if after_review == '':
-            total_review = total_review.drop(total_review.index[i])
-            total_review.reset_index(drop=True)
+            total_review.drop(index=i, inplace=True)
+    total_review.reset_index(drop=True)
     return total_review
 
 # 식신 사이트 date 형식변환
@@ -40,12 +40,14 @@ def naver_transform_datetime_df(df):
 
 # 구글 사이트/ 영어나, 번역된 리뷰 제거
 def google_eng_transfer_del(google_review_data):
+    print(google_review_data)
     for i, review in enumerate(google_review_data['review']):
         if type(review) != 'str':
             review = str(review)
-        elif "Google 번역 제공" in review:
-            google_review_data = google_review_data.drop(google_review_data.index[i])
-
+        if "Google 번역 제공" in review:
+            print(review)
+            google_review_data.drop(index=i, inplace=True)
+    google_review_data.reset_index(drop=True)
     return google_review_data
 
 
@@ -153,7 +155,7 @@ def clean_text(line):
     review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',str(line)) #remove punctuation
     # review = re.sub(r'\d+','', review)# remove number# remove number
     # review = review.lower() #lower case
-    review = re.sub(r'~', '', review)  #50~60대 에서 ~ 제거
+    review = re.sub(r'~', '에서', review)  #50~60대 에서 ~
     review = re.sub(r'[ㄱ-ㅎㅏ-ㅣ]', '', review)  # 한글 ㅎㅎ,ㅜ,ㅣ 등 오탈자 제거
     review = re.sub(r'[a-zA-Z]', '', review) #영어 제거
     review = re.sub(r'\s+', ' ', review) #remove extra space
@@ -163,7 +165,6 @@ def clean_text(line):
     review = re.sub(r'\s+$', '', review) #remove space from the end
     review = emoticon_normalize(review, num_repeats=2) #하하, 이모티콘 등 제거
     review = emoji_pattern.sub(r'', review) #이모지 제거
-    review = re.sub(r'(번역)', '', review)
 
     return review
 
