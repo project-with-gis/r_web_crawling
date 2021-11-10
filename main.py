@@ -22,7 +22,7 @@ def main(path):
     # google만 리뷰데이터 있는 상태에서 전처리하는 코드
     # - main('data/google_total_reviews_1105.csv') 로 변경
     concat_review =pd.read_csv(path)
-    concat_review = concat_review[0:20].reset_index(drop=True)
+    concat_review = concat_review.reset_index(drop=True)
 
 
     # subset에 컬럼명 적기 (하나여도 리스트로 작성 필수)
@@ -41,18 +41,18 @@ def main(path):
 
 
     # review 파일에 전처리 컬럼 추가
-    total_review['after_review'] = after_review_total
+    total_review['preprocessed_review'] = after_review_total
     # print(total_review)
 
     #전처리 후 리뷰가 '' 비어있는 상태인 행 삭제
     total_review = remove_after_nan(total_review)
 
     # csv 파일로 저장
-    save_csv(total_review, 'google_total_pre_reviews.csv')
+    save_csv(total_review, 'siksin_total_pre_reviews.csv')
     return total_review
 
 
 if __name__ == '__main__':
-    review_data = main('data/google_total_reviews_1105.csv') # 사이트리뷰데이터 넣으면됨
+    review_data = main('data/siksin_전전처리_1107.csv') # 사이트리뷰데이터 넣으면됨
     # review_data = main('data/storeInfo_2.csv') # 최종 ver
     print(review_data)
