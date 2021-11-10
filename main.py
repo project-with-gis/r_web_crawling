@@ -41,7 +41,7 @@ def main(path):
 
 
     # review 파일에 전처리 컬럼 추가
-    total_review['after_review'] = after_review_total
+    total_review['preprocessed_review'] = after_review_total
     # print(total_review)
 
     #전처리 후 리뷰가 '' 비어있는 상태인 행 삭제
