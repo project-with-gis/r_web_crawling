@@ -152,7 +152,7 @@ def clean_text(line):
             u"\U0001F680-\U0001F6FF"  # transport & map symbols
             u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
                                "]+", flags=re.UNICODE)
-    review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',str(line)) #remove punctuation
+    review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ/\?\^\!\-]', '',str(line)) #remove punctuation
     # review = re.sub(r'\d+','', review)# remove number# remove number
     # review = review.lower() #lower case
     review = re.sub(r'~', '에서', review)  #50~60대 에서 ~
@@ -167,20 +167,3 @@ def clean_text(line):
     review = emoji_pattern.sub(r'', review) #이모지 제거
 
     return review
-
-def preprocessing_all_in_one(path, name):
-    lines = []
-    map = loanword_dic_open()
-    data = read_csv('./data/siksin_전전처리_1107.csv', index=False)[:200]
-    for i in tqdm(range(len(data.index))):
-        basic = basic_preprocessing(data,i)
-        punc = clean_punc(basic)
-        review = spell_check(punc)
-        # fin = normalizer(review)
-        lw = loanword_corrector(review, map)
-        lines.append(lw)
-    # print(lines)
-    data['preprocessed_review'] = lines
-    # print(data)
-    save_csv(data, path, name)
-
