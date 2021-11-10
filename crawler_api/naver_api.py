@@ -8,6 +8,7 @@ import re
 import os
 import random
 
+
 def naver_store_id(store_info):
     headers = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36',
@@ -119,9 +120,9 @@ def naver_review_crawling(store_info):
                             portal_id = 1004
 
                             data = [store_id, portal_id, score, review, write_date]
-                            print(data)
+                            # print(data)
                             df = df.append(pd.Series(data, index=df.columns), ignore_index=True)
-                        print(len(review_list))
+                        # print(len(review_list))
 
 
                 except:
@@ -130,22 +131,62 @@ def naver_review_crawling(store_info):
                     continue
 
             except:
-                print("리뷰 크롤링 종료; 귀찮지만 갯수 확인..♡")
+                # print("리뷰 크롤링 종료; 귀찮지만 갯수 확인..♡")
                 break
 
     return df
 
-# if __name__=='__main__':
-#
-#     info_df = pd.read_csv('store_info.csv') # 경로변경
-#     info_df = info_df[0:].reset_index(drop=True) # 인덱스 수정
-#
-#     # 네이버에서 음식점 경로값 크롤링
-#     link_df = naver_store_id(info_df)
-#     link_df = pd.concat([info_df, link_df['n_link']], axis=1)
-#
-#     # 네이버 음식점 경로값을 통해 리뷰 크롤링
-#     path = './'
-#     review_df_na = naver_review_crawling(link_df)
-#     review_df_na.to_csv(os.path.join(path, 'naver_review.csv'), header=False, index=False)
 
+# def add_store_info(store_info):
+#     headers = {
+#             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36',
+#             'content-type': 'application/json',
+#         }
+#     params = (
+#         ('lang', 'ko'),
+#     )
+#
+#     df = pd.DataFrame(columns=['store_id', 'portal_id', 'open_hours', 'n_link'])
+#
+#     for i in tqdm(range(len(store_info))):
+#         time.sleep(6)
+#         store_id = store_info.loc[i]['store_id']
+#         n_link = store_info.loc[i]['n_link']
+#         response = requests.get(f'https://map.naver.com/v5/api/sites/summary/{n_link}', headers=headers, params=params)
+#         response = json.loads(response.text)
+#         portal_id = 1004
+#         try:
+#             open_hours = response['bizHour']
+#             # img_url = response['imageURL']
+#             # print(open_hours, img_url)
+#
+#             data = [store_id, portal_id, open_hours, n_link]
+#             df = df.append(pd.Series(data, index=df.columns), ignore_index=True)
+#
+#         except:
+#             print("oepn_hours error")
+#
+#     return df
+
+
+if __name__=='__main__':
+
+    # 경로 설정 및 인덱스 수정
+
+    store_info = pd.read_csv(r'C:/Users/aj878/PycharmProjects/pythonProject2/storeInfo_2.csv') # 경로변경
+    store_info = store_info[4606:6000].reset_index(drop=True)# 인덱스 수정
+
+
+    # 네이버에서 음식점 경로값 크롤링
+    df = naver_store_id(store_info)
+    store_info = pd.concat([store_info, df['n_link']], axis=1)
+
+
+    # # 음식점에 추가될 영업시간 및 사진 url 크롤링
+    # # store_df = add_store_info(store_info)
+    # # store_df.to_csv(os.path.join(path, 'naver_store_info_add.csv'), header=False, index=False)
+
+    # 네이버 음식점 경로값을 통해 리뷰 크롤링
+    path = './'
+    review_df = naver_review_crawling(store_info)
+    review_df.to_csv(os.path.join(path, 'naver_review4605_6000.csv'), header=False, index=False)

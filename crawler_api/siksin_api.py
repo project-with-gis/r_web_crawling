@@ -28,7 +28,7 @@ def siksin_review_scraping(store_info):
     }
 
     check = []
-    df = pd.DataFrame(columns=['store_id', 'portal_id', 'review_score', 'review', 'write_date'])
+    df = pd.DataFrame(columns=['store_id', 'portal_id', 'date', 'score', 'review'])
     for i in tqdm(range(len(store_info))):
         store_id = store_info.loc[i]['store_id']
         store_num = store_info.loc[i]['s_link']
@@ -59,11 +59,12 @@ def siksin_review_scraping(store_info):
                 review = review_list['storyContents']
                 score = review_list['score']
                 timestamp = review_list['writeDt']
-                write_date = datetime.datetime.fromtimestamp(timestamp/1000)
+                date = datetime.datetime.fromtimestamp(timestamp/1000)
+                # date = datetime.date.strptime(timestamp,'%Y-%m-%d')
                 portal_id = 1001
                 num += 1
 
-                data = [store_id, portal_id, score, review, write_date]
+                data = [store_id, portal_id, date, score, review]
                 df = df.append(pd.Series(data, index=df.columns), ignore_index=True)
 
             if num == cnt:
@@ -121,3 +122,10 @@ def add_siksin_info(store_info):
     return df
 
 
+# if __name__ == '__main__':
+#     info_df = read_csv('C:/Users/alti1/PycharmProjects/r_web_crawling/data/storeInfo_2.csv')
+#     info_df = info_df[:5]
+#     s_link = add_siksin_info(info_df)
+#     review_df_si = siksin_review_scraping(s_link)
+#     save_csv(review_df_si, 'C:/Users/alti1/PycharmProjects/r_web_crawling/data', 'siksintest.csv')
+#     print(review_df_si.head())
