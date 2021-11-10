@@ -72,76 +72,99 @@ def rounding_off_scores_df(df, num):
 
 
 #######################공통으로쓰는 전처리 함수###########################
+import kss
+from hanspell import spell_checker
+import re
+from soynlp.normalizer import *  # 이모티콘 하하하 등 제거
+
+
+
+# 특정행을 기준으로 null값이 있으면 해당 행을 삭제
+def remove_nan(df,subset):
+    df.dropna(subset=subset, inplace=True)
+    df = df.reset_index(drop=True)
+    return df
+
+# 전처리 후 리뷰가 '' 비어있는 상태인 행 삭제
+def remove_after_nan(total_review):
+    for i, after_review in enumerate(total_review['after_review']):
+        if after_review == '':
+            total_review = total_review.drop(total_review.index[i])
+            total_review.reset_index(drop=True)
+    return total_review
+
+
 # 전처리과정 전부 진행하는 함수
-# 리뷰하나가 전체 전처리과정을 돌고 -> 리스트에 전처리 후 리뷰들이 하나씩 리스트에 담긴다
-def prepro(review_list):
+def prepro_1(line):
+
+    # 특수문자나 기호 사이 띄어짐
+    cleaned_corpus = clean_punc(line)
+    print("클린",cleaned_corpus)
+    # print(len(cleaned_corpus))
+
+    # 정규표현식을 사용한 특수문자 처리
+    basic_preprocessed_corpus = clean_text(cleaned_corpus)
+    # for i in range(len(basic_preprocessed_corpus)):
+    #     print(basic_preprocessed_corpus[i])
+    print("베이직",basic_preprocessed_corpus)
+    # print(len(basic_preprocessed_corpus))
+
+    # 띄어쓰기, 맞춤법 검사
+    checked_sent=(sent_check(basic_preprocessed_corpus))
+    print(checked_sent)
+    # print(len(checked_sent))
+
+    prepro_sent = lownword_check(checked_sent)
+    # sents=''
+    # for sent in prepro_sent:
+    #     sents += sent
+    print("들어가기전",prepro_sent)
+
+    return prepro_sent
+
+# 전처리 진행 후 컬럼에 넣기 전에 리스트만들기
+def prepro_2(review_list):
     after_review_total = []
     for i, one_review in enumerate(review_list):
-        print(i, "=======================================")
-        print(one_review)
-        after_basic_check = basic_check(one_review)
-        print(after_basic_check)
-        after_spell_check = spell_check_text(after_basic_check)
-        print(after_spell_check)
-        after_review_total.append(after_spell_check)
+        after_review = prepro_1(one_review)
+        after_review_total.append(after_review)
 
     return after_review_total
 
 
-# 가장 기초적인 전처리
-# html tag 제거
-# 숫자 제거
-# Lowercasing
-# "@%*=()/+ 와 같은 punctuation 제거
-def basic_check(review):  # 한 행마다 실행되도록. 이 함수가 받아오는건 하나의 리뷰
-    cleaned_corpus = clean_punc(review)
-    basic_preprocessed_corpus = clean_text(cleaned_corpus)
-    return basic_preprocessed_corpus
 
-# 사전 기반의 오탈자 교정
-# 줄임말 원형 복원 (e.g. I'm not happy -> I am not happy)
-def spell_check_text(texts): # 한 댓글에 대한 문장들
-    lownword_map = make_dictionary() # 외래어 사전
-    spelled_sent = spell_checker.check(texts) # 띄어쓰기, 맞춤법
-    checked_sent = spelled_sent.checked
-    normalized_sent = repeat_normalize(checked_sent) # 반복되는 이모티콘이나 자모를 normalization
-    for lownword in lownword_map: # 외래어 바꿔줌 (miss spell -> origin spell)
-        normalized_sent = normalized_sent.replace(lownword, lownword_map[lownword])
-    corpus = normalized_sent
+def sentence_tokenized(lines):
+    sentence_tokenized_text = []
+    lines = lines.strip()
+    for sent in kss.split_sentences(lines):
+        # print(sent)
+        sentence_tokenized_text.append(sent.strip())
 
-    return corpus
+    # print(sentence_tokenized_text)
+    return sentence_tokenized_text
 
-def make_dictionary():
-    lownword_map = {}
-    lownword_data = open('data/confused_loanwords.txt', 'r', encoding='utf-8')
-    lines = lownword_data.readlines()
-    for line in lines:
-        line = line.strip()
-        miss_spell = line.split('\t')[0]
-        ori_word = line.split('\t')[1]
-        lownword_map[miss_spell] = ori_word
-    return lownword_map
 
-def clean_punc(texts): #문장부호같은거 다 삭제
+def clean_punc(lines):
     punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
-
     punct_mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
                      "—": "-", "–": "-", "’": "'", "_": "-", "`": "'", '“': '"', '”': '"', '“': '"', "£": "e",
                      '∞': 'infinity', 'θ': 'theta', '÷': '/', 'α': 'alpha', '•': '.', 'à': 'a', '−': '-', 'β': 'beta',
                      '∅': '', '³': '3', 'π': 'pi', }
-
     for p in punct_mapping:
-        texts = texts.replace(p, punct_mapping[p])  # punct_mapping에 있는 변수가 있으면 대응되는걸로 변경되도록 한다.
+        text = lines.replace(p, punct_mapping[p])
 
     for p in punct:
-        texts = texts.replace(p, f' {p} ')
+        text = text.replace(p, f' {p} ')
 
-    specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': '', '\r': ''} # 대체하고싶은거 알아서 추가하기
+    specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': ''}
     for s in specials:
-        texts = texts.replace(s, specials[s])
-    texts = texts.strip() #빈칸 삭제
+        text = text.replace(s, specials[s])
 
-    return texts
+
+    # print(text)
+    return text
+
+
 
 def clean_text(line):
     emoji_pattern = re.compile("["
@@ -152,10 +175,12 @@ def clean_text(line):
                                "]+", flags=re.UNICODE)
     review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',str(line)) #remove punctuation
     # review = re.sub(r'\d+','', review)# remove number# remove number
-    # review = review.lower() #lower case
+    review = review.lower() #lower case
     review = re.sub(r'~', '', review)  #50~60대 에서 ~ 제거
     review = re.sub(r'[ㄱ-ㅎㅏ-ㅣ]', '', review)  # 한글 ㅎㅎ,ㅜ,ㅣ 등 오탈자 제거
     review = re.sub(r'[a-zA-Z]', '', review) #영어 제거
+    # review = re.sub(r'원문', '', review)
+    # review = re.sub(r'Google 번역 제공', '', review)
     review = re.sub(r'\s+', ' ', review) #remove extra space
     review = re.sub(r'<[^>]+>','',review) #remove Html tags
     review = re.sub(r'\s+', ' ', review) #remove spaces
@@ -163,7 +188,53 @@ def clean_text(line):
     review = re.sub(r'\s+$', '', review) #remove space from the end
     review = emoticon_normalize(review, num_repeats=2) #하하, 이모티콘 등 제거
     review = emoji_pattern.sub(r'', review) #이모지 제거
-    review = re.sub(r'(번역)', '', review)
 
+    # print(review)
     return review
 
+
+
+# 맞춤법 검사 및 띄어쓰기
+def sent_check(sents):
+    spelled_sent = spell_checker.check(sents)
+    checked_sent = spelled_sent.checked
+    # print(checked_sent)
+
+    return checked_sent
+
+# 외래어
+def lownword():
+    lownword_map = {}
+    lownword_data = open('data/confused_loanwords.txt', 'r', encoding='utf-8') #외래어 사전 데이터
+    lines = lownword_data.readlines()
+
+    for line in lines:
+        line = line.strip()
+        miss_spell = line.split('\t')[0]
+        ori_word = line.split('\t')[1]
+        lownword_map[miss_spell] = ori_word
+
+    return lownword_map
+
+def lownword_check(sents):
+    lownword_map = lownword()
+
+    for l_word in lownword_map:
+        normalized_sent = sents.replace(l_word, lownword_map[l_word])
+
+    return normalized_sent
+
+
+
+
+# 구글 사이트/ 영어나, 번역된 리뷰 제거
+def google_eng_transfer_del(google_review_data):
+    for i, review in enumerate(google_review_data['review']):
+        if type(review) != 'str':
+            review = str(review)
+        if "번역" in review:
+            google_review_data = google_review_data.drop(google_review_data.index[i])
+        elif "원문" in review:
+            google_review_data = google_review_data.drop(google_review_data.index[i])
+
+    return google_review_data
