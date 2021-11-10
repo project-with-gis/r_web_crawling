@@ -189,7 +189,7 @@ def preprocessing_all_in_one(path, name):
     for i in tqdm(range(len(data.index))):
         basic = basic_preprocessing(data,i)
         punc = clean_punc(basic)
-        review = spell_check(punc)
+        review = spell_check(punc.encode(encoding='UTF-8'))
         # fin = normalizer(review)
         lw = loanword_corrector(review, map)
         lines.append(lw)
