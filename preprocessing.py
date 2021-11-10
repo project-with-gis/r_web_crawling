@@ -16,8 +16,8 @@ def remove_nan(df,subset):
 def remove_after_nan(total_review):
     for i, after_review in enumerate(total_review['preprocessed_review']):
         if after_review == '':
-            total_review = total_review.drop(total_review.index[i])
-            total_review.reset_index(drop=True)
+            total_review.drop(index=i, inplace=True)
+    total_review.reset_index(drop=True)
     return total_review
 
 # 식신 사이트 date 형식변환
