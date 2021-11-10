@@ -9,8 +9,8 @@ def read_csv(path):  # 따옴표 잊지말기
     return df
 
 def save_csv(df, name):
-    df.to_csv(os.path.join('./data/total_reviews.csv', name), header=True, index=False)  # header와 index는 필요하면 True해주기
-
+    df.to_csv(os.path.join('./data/', name), header=True, index=False)  # header와 index는 필요하면 True해주기
+                                                                        # name은 파일명.csv 를 의미
 
 def concat_df(*args):
     total_df = pd.concat([*args])
