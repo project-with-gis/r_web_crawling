@@ -168,3 +168,19 @@ def clean_text(line):
 
     return review
 
+def preprocessing_all_in_one(path, name):
+    lines = []
+    map = loanword_dic_open()
+    data = read_csv('./data/siksin_전전처리_1107.csv', index=False)[:200]
+    for i in tqdm(range(len(data.index))):
+        basic = basic_preprocessing(data,i)
+        punc = clean_punc(basic)
+        review = spell_check(punc)
+        # fin = normalizer(review)
+        lw = loanword_corrector(review, map)
+        lines.append(lw)
+    # print(lines)
+    data['preprocessed_review'] = lines
+    # print(data)
+    save_csv(data, path, name)
+
