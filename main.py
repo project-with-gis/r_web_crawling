@@ -29,7 +29,7 @@ def main(path):
     # 데이터의 'review', 'score' null일 경우 해당 행 삭제
     total_review = remove_nan(concat_review, ['review', 'score'])
     # print(total_review)
-    total_review = total_review[650000:670000]
+    total_review = total_review[675000:900000]
 
     #특정리뷰 테스트할 때
     # total_review.loc[0]=[1,2,3,4,'각종 해산물(전복, 각종조개...)이  많이 들어 있어서인지, 국물이 시원하고 좋았다. 전날 먹은 술이 완전 해장되었고, 국물이 좋아, 다시 술 먹고 싶은 생각이 들었다. 또한, 식당에 들어가 전복해물뚝배기 가격이 19,000원인것을 보고, 조금 비싸지  않나 싶었는데, 먹고나니, 돈이 아깝지 않았다. 다만, 반찬에 김치가 없는게, 조금 아쉬었다.']
@@ -45,11 +45,11 @@ def main(path):
     total_review['preprocessed_review'] = after_review_total
     # print(total_review)
 
-    #전처리 후 리뷰가 '' 비어있는 상태인 행 삭제
-    total_review = remove_after_nan(total_review)
+    # #전처리 후 리뷰가 '' 비어있는 상태인 행 삭제
+    # total_review = remove_after_nan(total_review)
 
     # csv 파일로 저장
-    save_csv(total_review, 'naver_total(650000~670000).csv')
+    save_csv(total_review, 'naver_total(675000~900000).csv')
     return total_review
 
 
