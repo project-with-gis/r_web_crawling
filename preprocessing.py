@@ -85,7 +85,7 @@ def prepro(review_list,df):
             print(one_review)
             after_basic_check = basic_check(one_review)
             print(after_basic_check)
-            after_spell_check = spell_check_text(after_basic_check.encode(encoding='UTF-8'))
+            after_spell_check = spell_check_text(after_basic_check)
             print(after_spell_check)
             after_review_total.append(after_spell_check)
         except:
