@@ -38,31 +38,39 @@ def naver_transform_datetime_df(df):
       a = parse(df['date'][i], yearfirst=True)
       df['date'][i] = a.strftime("%Y-%m-%d")
 
-# 구글 사이트/ 영어나, 번역된 리뷰 제거
-def google_eng_transfer_del(google_review_data):
+# 구글 사이트 한글을 영어로 번역한 영어부분 제거
+def google_eng_transfer_del1(google_review_data):
     print(len(google_review_data))
     for i, review in enumerate(google_review_data['review']):
         if type(review) != 'str':
             review = str(review)
-        if "Translated by Google" in review:
-            print(review)
-            if "Original" in review:
-                search = "O"
-                indexNo = review.find(search)
-                new = review[indexNo:]
-                google_review_data['review'][i] = new
-            else:
-                search = "T"
-                indexNo = review.find(search)
-                new = review[:indexNo]
-                google_review_data['review'][i] = new
-            print(new)
         if "Google 번역 제공" in review:
             print(review)
             google_review_data.drop(index=i, inplace=True)
             print(len(google_review_data))
-
     google_review_data.reset_index(drop=True)
+    return google_review_data
+
+# 구글 사이트 영어번역부분제거 한글만 추출 -> 전처리에서 다시 제대로 제거됨
+def google_eng_transfer_del2(google_review_data):
+    print('전',len(google_review_data))
+    reviewlist=[]
+    for review in google_review_data:
+        if "Translated by Google" in review:
+            # print(review)
+            if "Original" in review:
+                search = "O"
+                indexNo = review.find(search)
+                new = review[indexNo:]
+                reviewlist.append(new)
+            if "Original" not in review:
+                search = "T"
+                indexNo = review.find(search)
+                new = review[:indexNo]
+                reviewlist.append(new)
+            print(new)
+        reviewlist.append(review)
+    print('후',len(reviewlist))
     return google_review_data
 
 
