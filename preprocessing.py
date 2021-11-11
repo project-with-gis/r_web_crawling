@@ -40,15 +40,31 @@ def naver_transform_datetime_df(df):
 
 # 구글 사이트/ 영어나, 번역된 리뷰 제거
 def google_eng_transfer_del(google_review_data):
-    print(google_review_data)
+    print(len(google_review_data))
     for i, review in enumerate(google_review_data['review']):
         if type(review) != 'str':
             review = str(review)
+        if "Translated by Google" in review:
+            print(review)
+            if "Original" in review:
+                search = "O"
+                indexNo = review.find(search)
+                new = review[indexNo:]
+                google_review_data['review'][i] = new
+            else:
+                search = "T"
+                indexNo = review.find(search)
+                new = review[:indexNo]
+                google_review_data['review'][i] = new
+            print(new)
         if "Google 번역 제공" in review:
             print(review)
             google_review_data.drop(index=i, inplace=True)
+            print(len(google_review_data))
+
     google_review_data.reset_index(drop=True)
     return google_review_data
+
 
 
 # def swap_columns_with_name_df(df, *args): # (*args)에는 원하는 columns 이름 순서대로(따옴표 잊지말기)
@@ -85,7 +101,7 @@ def prepro(review_list,df):
             print(one_review)
             after_basic_check = basic_check(one_review)
             print(after_basic_check)
-            after_spell_check = spell_check_text(after_basic_check.encode(encoding='UTF-8'))
+            after_spell_check = spell_check_text(after_basic_check)
             print(after_spell_check)
             after_review_total.append(after_spell_check)
         except:

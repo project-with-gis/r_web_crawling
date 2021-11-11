@@ -44,8 +44,8 @@ def main(path):
     total_review['preprocessed_review'] = after_review_total
     # print(total_review)
 
-    #전처리 후 리뷰가 '' 비어있는 상태인 행 삭제
-    total_review = remove_after_nan(total_review)
+    # 전처리 후 리뷰가 '' 비어있는 상태인 행 삭제 -- 나중에 모델 돌리기 전으로 옮길 예정
+    # total_review = remove_after_nan(total_review)
 
     # csv 파일로 저장
     save_csv(total_review, 'google_total_pre_reviews.csv')
