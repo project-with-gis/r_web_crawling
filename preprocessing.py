@@ -53,7 +53,7 @@ def google_eng_transfer_del1(google_review_data):
 
 # 구글 사이트 영어번역부분제거 한글만 추출 -> 전처리에서 다시 제대로 제거됨
 def google_eng_transfer_del2(google_review_data):
-    print('전',len(google_review_data))
+    print(google_review_data)
     reviewlist=[]
     for review in google_review_data:
         if "Translated by Google" in review:
@@ -63,15 +63,18 @@ def google_eng_transfer_del2(google_review_data):
                 indexNo = review.find(search)
                 new = review[indexNo:]
                 reviewlist.append(new)
-            if "Original" not in review:
+                print(new)
+            else:
+                # "Original" not in review:
                 search = "T"
                 indexNo = review.find(search)
                 new = review[:indexNo]
                 reviewlist.append(new)
-            print(new)
-        reviewlist.append(review)
-    print('후',len(reviewlist))
-    return google_review_data
+                print(new)
+        else:
+            reviewlist.append(review)
+    print(len(reviewlist))
+    return reviewlist
 
 
 
