@@ -37,7 +37,7 @@ def main(path):
 
     # 데이터 전처리
     # print(total_review['review'])
-    after_review_total = prepro(total_review['review'])
+    after_review_total, total_review = prepro(total_review['review'],total_review)
     # print(after_review_total)
 
 
