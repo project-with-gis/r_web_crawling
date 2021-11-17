@@ -39,21 +39,27 @@ def main(path):
     # print(pre_review)
 
 
-    pre_review = pd.read_csv(path)
+    # pre_review = pd.read_csv(path)
+
+    review_df_na = pd.read_csv(".data/naver_total_pre_reviews_1115.csv")
+    review_df_go = pd.read_csv(".data/google_total_pre_reviews1112.csv")
+    review_df_si = pd.read_csv(".data/siksin_total_pre_reviews_1110.csv")
+    review_df_di = pd.read_csv(".data/diningcode_total_pre_reviews_1110.csv")
+    pre_review = concat_df(review_df_di,review_df_go,review_df_na,review_df_si)
+
     pre_review = remove_nan(pre_review, ['preprocessed_review', 'score', 'review'])
-    pre_review = pre_review[:100] # 빼기
     # 토큰화 컬럼 추가 # Word2Vec모델 학습시켜서 저장                 # **param은 word2vec내에 정의되어있는 Word2Vec함수의 파라미터
-    token_review = word2vec(df=pre_review, column='preprocessed_review', size=150, window=4, min_count=2)
+    token_review = word2vec(df=pre_review, column='preprocessed_review',  size=100, window=5, min_count=5)
 
 
     # DEC 모델 돌리기 (이 안에서 워드투벡터함수도사용-load_review함수에서) # 클러스터링해서 알려줌
-    y_pred = dec_play(token_review) # weights 저장
-
+    # y_pred = dec_play(token_review) # weights 저장
+    review_after_dec = dec_play(token_review) # 돌려보는거
     # 5개로 그룹핑된 결과를 군집마다 1~5점 할당하고 token_review 컬럼에 추가 (label이 0이라고 score가 0인것은 아님)
 
 
     # csv 파일로 저장
-    save_csv(review_after_dec, 'dining_review_after_dec.csv')
+    save_csv(review_after_dec, 'review_after_dec.csv')
 
     return y_pred
 

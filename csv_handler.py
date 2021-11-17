@@ -18,7 +18,6 @@ def concat_df(*args):
     return total_df
 
 
-
 # def concat_review_csv(input_path):
 #     all_csv_list = glob.glob(os.path.join(input_path, '*review.csv'))  # review.csv로 끝나는 모든 파일 리스트로 가져오기
 #     # print(all_csv_list)
