@@ -39,13 +39,7 @@ def main(path):
     # print(pre_review)
 
 
-    # pre_review = pd.read_csv(path)
-
-    review_df_na = pd.read_csv(".data/naver_total_pre_reviews_1115.csv")
-    review_df_go = pd.read_csv(".data/google_total_pre_reviews1112.csv")
-    review_df_si = pd.read_csv(".data/siksin_total_pre_reviews_1110.csv")
-    review_df_di = pd.read_csv(".data/diningcode_total_pre_reviews_1110.csv")
-    pre_review = concat_df(review_df_di,review_df_go,review_df_na,review_df_si)
+    pre_review = pd.read_csv(path)
 
     pre_review = remove_nan(pre_review, ['preprocessed_review', 'score', 'review'])
     # 토큰화 컬럼 추가 # Word2Vec모델 학습시켜서 저장                 # **param은 word2vec내에 정의되어있는 Word2Vec함수의 파라미터
