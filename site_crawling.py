@@ -41,7 +41,13 @@ def google_crawling(path):
     storeInfo, review_df_go = google(info_df)
 
     # 영어리뷰 번역리뷰 제거
-    review_df_go = google_eng_transfer_del(review_df_go)
+    review_df_go = google_eng_transfer_del1(review_df_go)
+
+    edit_reviewlist = google_eng_transfer_del2(review_df_go['review'])
+    del review_df_go['review']
+    review_df_go['review'] = edit_reviewlist
+
+    review_df_go = rounding_off_scores_df(review_df_go, 3)
 
     # csv 파일로 저장
     # save_csv(review_df_goo, path, name)
