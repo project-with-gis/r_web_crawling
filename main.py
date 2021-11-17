@@ -22,13 +22,16 @@ def main(path):
     # google만 리뷰데이터 있는 상태에서 전처리하는 코드
     # - main('data/google_total_reviews_1105.csv') 로 변경
     concat_review =pd.read_csv(path)
-    concat_review = concat_review[0:20].reset_index(drop=True)
+    concat_review = concat_review[0:].reset_index(drop=True)
 
 
     # subset에 컬럼명 적기 (하나여도 리스트로 작성 필수)
     # 데이터의 'review', 'score' null일 경우 해당 행 삭제
     total_review = remove_nan(concat_review, ['review', 'score'])
+    print(len(total_review))
     # print(total_review)
+    # index_re = concat_review[concat_review['preprocessed_review'] == 'nan'].index.tolist()
+    # total_review = concat_review.loc[concat_review.index == index_re]
 
     #특정리뷰 테스트할 때
     # total_review.loc[0]=[1,2,3,4,'각종 해산물(전복, 각종조개...)이  많이 들어 있어서인지, 국물이 시원하고 좋았다. 전날 먹은 술이 완전 해장되었고, 국물이 좋아, 다시 술 먹고 싶은 생각이 들었다. 또한, 식당에 들어가 전복해물뚝배기 가격이 19,000원인것을 보고, 조금 비싸지  않나 싶었는데, 먹고나니, 돈이 아깝지 않았다. 다만, 반찬에 김치가 없는게, 조금 아쉬었다.']
@@ -39,20 +42,55 @@ def main(path):
     after_review_total, total_review = prepro(total_review['review'],total_review)
     # print(after_review_total)
 
-
     # review 파일에 전처리 컬럼 추가
     total_review['preprocessed_review'] = after_review_total
+    # print(total_review['preprocessed_review'])
     # print(total_review)
 
-    #전처리 후 리뷰가 '' 비어있는 상태인 행 삭제
-    total_review = remove_after_nan(total_review)
+    # #전처리 후 리뷰가 '' 비어있는 상태인 행 삭제
+    # total_review = remove_after_nan(total_review)
 
-    # csv 파일로 저장
-    save_csv(total_review, 'google_total_pre_reviews.csv')
-    return total_review
+    # total_review =text_to_token(total_review, 'preprocessed_rivew')
+
+    # # csv 파일로 저장
+    save_csv(total_review, 'naver_total_pre_reviews_1114.csv')
+    # return total_review
 
 
 if __name__ == '__main__':
-    review_data = main('data/google_total_reviews_1105.csv') # 사이트리뷰데이터 넣으면됨
+    review_data = main('data/naver_total_reviews_1107.csv') # 사이트리뷰데이터 넣으면됨
     # review_data = main('data/storeInfo_2.csv') # 최종 ver
-    print(review_data)
+
+
+
+
+
+
+    # for i in range(len(review_data)):
+    #     if review_data.isnull:
+    #         data = main('data/naver_preprocessed_reviews.csv')
+    #         print(data)
+    #
+
+    # review = read_csv('data/naver_preprocessed_reviews.csv')
+    # pre_reviewnull = review[review['preprocessed_review'].isnull()] # NaN인 리뷰
+    # review = remove_nan(review, ['preprocessed_review'])  # NaN 아닌 데이터들
+    #
+    # pre_reviewnull = pre_reviewnull.reset_index(drop=True)
+    # # print(pre_reviewnull)
+    # # print(len(pre_reviewnull))
+    # # # total_review = google_eng_transfer_del(pre_reviewnull)
+    # after_review_total, total_review = prepro(pre_reviewnull['review'], pre_reviewnull)
+    # # print(after_review_total)
+    # # print(total_review)
+    # del pre_reviewnull['preprocessed_review']
+    # #
+    # pre_reviewnull['preprocessed_review'] = after_review_total
+    # # print(total_review)
+    # print(pre_reviewnull)
+    # reviewnullprocess = concat_df(review, pre_reviewnull)
+    #
+    # reviewnullprocess.to_csv('jeongjuyeon_pre.csv')
+    #
+    # # save_csv(reviewnullprocess, 'data/naver_preprocessed_reviews.csv')
+

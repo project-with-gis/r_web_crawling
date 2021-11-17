@@ -85,7 +85,7 @@ def prepro(review_list,df):
             print(one_review)
             after_basic_check = basic_check(one_review)
             print(after_basic_check)
-            after_spell_check = spell_check_text(after_basic_check.encode(encoding='UTF-8'))
+            after_spell_check = spell_check_text(after_basic_check)
             print(after_spell_check)
             after_review_total.append(after_spell_check)
         except:
@@ -158,9 +158,10 @@ def clean_text(line):
             u"\U0001F680-\U0001F6FF"  # transport & map symbols
             u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
                                "]+", flags=re.UNICODE)
-    review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',str(line)) #remove punctuation
+    review = re.sub(r'[@%\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\⭐\♡\☆\★\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-\ᆢ\>\<\ㆍ]', '',str(line)) #remove punctuation
     # review = re.sub(r'\d+','', review)# remove number# remove number
     # review = review.lower() #lower case
+    # review = re.sub(r'[੭ ˙ᗜ˙ ੭✧ ̀ ̫ ́✧ ❤☺<🧀🥰❣🧡⬆⬇[] ¤̴̶̷̤́ ‧̫̮ ¤̴̶̷̤̀ ☘〰 🤤☕◡̈♀➡⬅☺🤙‍♂️‍✨☀🥳 ಥ ࡇ ಥ  ˃̶᷄‧̫ ˂̶᷅๑ ✋ ᕕ ᐛ ᕗ 🦑 ◡ ٩ ᐛ و🤗 ] ⛰ ෆ ෆ 🥘🧚]', '', review)
     review = re.sub(r'~', '에서', review)  #50~60대 에서 ~
     review = re.sub(r'[ㄱ-ㅎㅏ-ㅣ]', '', review)  # 한글 ㅎㅎ,ㅜ,ㅣ 등 오탈자 제거
     review = re.sub(r'[a-zA-Z]', '', review) #영어 제거
