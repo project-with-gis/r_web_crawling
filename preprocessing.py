@@ -103,10 +103,10 @@ def rounding_off_scores_df(df, num):
 #######################공통으로쓰는 전처리 함수###########################
 # 전처리과정 전부 진행하는 함수
 # 리뷰하나가 전체 전처리과정을 돌고 -> 리스트에 전처리 후 리뷰들이 하나씩 리스트에 담긴다
-def prepro(review_list,df):
+def prepro(df):
     after_review_total = []
 
-    for i, one_review in enumerate(review_list):
+    for i, one_review in enumerate(df['review']):
         try:
             print(i, "=======================================")
             print(one_review)
@@ -119,8 +119,12 @@ def prepro(review_list,df):
             print("pass")
             df.drop(index=i, inplace=True)
 
-    df.reset_index(drop=True)
-    return after_review_total, df
+    df.reset_index(drop=True, inplace=True)
+
+    # review 파일에 전처리 컬럼 추가
+    df['preprocessed_review'] = after_review_total
+
+    return df
 
 
 # 가장 기초적인 전처리
