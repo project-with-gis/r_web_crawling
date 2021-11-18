@@ -17,7 +17,7 @@ def text_to_token(df, column):
     #           KoreanParticle, Noun, Number, PreEomi, Punctuation, ScreenName, Suffix, Unknown, Verb]
 
     tokenized_review = []
-    for review in df[column]:
+    for review in tqdm(df[column]):
         review = str(review)
         tmp = []
         if review:
@@ -29,7 +29,7 @@ def text_to_token(df, column):
     df['tokenized_review'] = tokenized_review
     return df
 
-def word2vec(df, column, **param): # 모델 저장
+def word2vec(df, column, **param): # 모델 저장 # **param은 word2vec내에 정의되어있는 Word2Vec함수의 파라미터
     df = text_to_token(df, column) # 토큰화
 
     review_data = df.reset_index(drop=True)

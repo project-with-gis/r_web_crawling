@@ -7,7 +7,7 @@ from hanspell import spell_checker
 from soynlp.normalizer import *
 
 # 특정행을 기준으로 null값이 있으면 해당 행을 삭제
-def remove_nan(df,subset):
+def remove_nan(df,subset): # subset에 컬럼명 적기 (하나여도 리스트로 작성 필수)
     df.dropna(subset=subset, inplace=True)
     df = df.reset_index(drop=True)
     return df

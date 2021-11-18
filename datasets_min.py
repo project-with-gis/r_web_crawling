@@ -33,7 +33,7 @@ def get_dataset(model, reviews, num_features):
 def load_review(df, **param):
     df = df[df['tokenized_review'].str.len() != 0] # tokenized_review 빈 리스트 제거
     tokenized_review = df['tokenized_review']
-    model = Word2Vec.load('data/word2vec_model.bin')
+    model = Word2Vec.load('word2vec_model_150_5_5.bin')
 
     x = get_dataset(model, list(tokenized_review), param['size'])
     y = df['score'].to_numpy()
