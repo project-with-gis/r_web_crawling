@@ -33,13 +33,8 @@ def main():
     # print(pre_review)
 
     # 중간 test용(워드임베딩_ver) - 전처리 된 데이터
-    review_df_na = pd.read_csv("data/naver_total_pre_reviews_1115.csv")
-    review_df_go = pd.read_csv("data/google_total_pre_reviews1112.csv")
-    review_df_si = pd.read_csv("data/siksin_total_pre_reviews_1110.csv")
-    review_df_di = pd.read_csv("data/diningcode_total_pre_reviews_1110.csv")
-    pre_review = concat_df(review_df_di,review_df_go,review_df_na,review_df_si)
-    pre_review = pre_review.drop(['Unnamed: 0', 'Unnamed: 0.1'], axis = 1)
-    pre_review = pre_review[:5]
+    # pre_review = pd.read_csv("data/review_pre_total.csv")
+    # pre_review = pre_review[:5]
 
     # 3. DEC 모델의 input 만들기 - 리뷰 데이터 워드임베딩 - 토큰화 컬럼 추가/Word2vec모델 학습시켜서 저장
     # pre_review = remove_nan(pre_review, ['preprocessed_review', 'score', 'review'])
@@ -56,21 +51,14 @@ def main():
     pre_review = remove_nan(pre_review, ['preprocessed_review', 'score', 'review'])
     pre_review = pre_review.reset_index(drop=True)
     train_dataloader, test_dataloader = bert_prepro(pre_review)
-    bert_model(train_dataloader, test_dataloader)
-
-
+    bert_model(train_dataloader, test_dataloader) # bert 모델 저장
 
 
     # 6. BERT 분류모델 - DEC 라벨
-    # review_after_dec에서 preprocessed_review, score 가져와서 모델에 넣음
-
-    ###################################################
-    # 5개로 그룹핑된 결과를 군집마다 1~5점 할당하고 token_review 컬럼에 추가 (label이 0이라고 score가 0인것은 아님)
-    # csv 파일로 저장
-    # save_csv(review_after_dec, 'review_after_dec.csv')
-    ########################################################
-
-    # return review_after_dec
+    review_after_dec = review_after_dec[['preprocessed_review', 'DEC_y']]
+    review_after_dec.rename(columns={'DEC_y': 'score'}, inplace=True)
+    train_dataloader, test_dataloader = bert_prepro(review_after_dec)
+    bert_model(train_dataloader, test_dataloader)  # bert 모델 저장 # 실행전에 모델 저장하는거 이름 바꿔주기
 
 
 if __name__ == '__main__':
@@ -80,3 +68,10 @@ if __name__ == '__main__':
     # print(review_after_dec)
 
 
+review_df_na = pd.read_csv("data/naver_total_pre_reviews_1115.csv")
+review_df_go = pd.read_csv("data/google_total_pre_reviews1112.csv")
+review_df_si = pd.read_csv("data/siksin_total_pre_reviews_1110.csv")
+review_df_di = pd.read_csv("data/diningcode_total_pre_reviews_1110.csv")
+pre_review = concat_df(review_df_di,review_df_go,review_df_na,review_df_si)
+pre_review = pre_review.drop(['Unnamed: 0', 'Unnamed: 0.1'], axis = 1)
+pre_review.to_csv("data/review_pre_total.csv")

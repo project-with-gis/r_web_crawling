@@ -183,11 +183,9 @@ def bert_model(train_dataloader, test_dataloader):
         print("")
         print("  Average training loss: {0:.2f}".format(avg_train_loss))
         print("  Training epcoh took: {:}".format(format_time(time.time() - t0)))
-
         # ========================================
         #               Validation
         # ========================================
-
         print("")
         print("Running Validation...")
 
