@@ -1,3 +1,4 @@
+from kobert.kobert_model import kobert_train, kobert_predict
 
 from csv_handler import *
 from preprocessing import *
@@ -69,6 +70,35 @@ def main():
     # review_after_dec.rename(columns={'DEC_y': 'score'}, inplace=True)
     # train_dataloader, test_dataloader = bert_prepro(review_after_dec)
     # bert_model(train_dataloader, test_dataloader)  # bert 모델 저장 # 실행전에 모델 저장하는거 이름 바꿔주기
+
+
+    # # 7. KoBERT 분류 모델
+    # df = pd.read_csv('data/min_score_count_data.csv')
+    # df.dropna(axis=0)
+    # df['score'] = df['score'].astype(int)
+    #
+    # # 점수마다 갯수 일치 시켜 데이트 프레임 생성
+    # score_5 = df[df['score'] == 5.0][:]
+    # score_4 = df[df['score'] == 4.0][:]
+    # score_3 = df[df['score'] == 3.0][:]
+    # score_2 = df[df['score'] == 2.0][:]
+    # score_1 = df[df['score'] == 1.0][:]
+    # # print(len(score_5), len(score_4),  len(score_3),  len(score_2),  len(score_1))
+    # df = pd.concat([score_1, score_2, score_3, score_4, score_5])
+    #
+    # scraping_data = df.reset_index(drop=True)
+    #
+    # print('KOBERT START') # kobert model 학습 (평점 model)
+    # column = 'preprocessed_review' # 'preprocessed_review'
+    # num_classes = 5; max_len = 256; batch_size = 64; epochs = 5
+    # model_name = 'kobert_test'
+    # kobert_train(scraping_data, column, num_classes, max_len, batch_size, epochs, model_name)
+    #
+    # print('KOBERT predict START') # 학습 시킨 모델로 예측
+    # model_name = 'kobert_test'
+    # predict_data = kobert_predict(scraping_data, model_name)
+    #
+    # print(predict_data)
 
 
 if __name__ == '__main__':
