@@ -37,11 +37,7 @@ def siksin_review_scraping(store_info):
         idx = 0
         num = 0
         while 1:
-            params = (
-                ('idx', idx),
-                ('limit', '100'),
-                ('sort', 'T'),
-            )
+            params = (('idx', idx), ('limit', '100'), ('sort', 'T'), )
 
             response = requests.get(f'https://api.siksinhot.com/v1/hp/{store_num}/review', headers=headers, params=params)
             response = json.loads(response.text)

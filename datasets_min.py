@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from word2vec import *
+from preprocessing import *
 
 def get_features(words, model, num_features):
     # 출력 벡터 초기화
@@ -31,11 +32,16 @@ def get_dataset(model, reviews, num_features):
     return reviewFeatureVecs
 
 def load_review(df, **param):
-    df = df[df['tokenized_review'].str.len() != 0] # tokenized_review 빈 리스트 제거
+    # df = df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    # df = remove_nan(df, ['preprocessed_review', 'score', 'review', 'tokenized_review'])
+    # df = df[df['tokenized_review'].str.len() != 0] # tokenized_review 빈 리스트 제거
+    # df = df.reset_index()
     tokenized_review = df['tokenized_review']
-    model = Word2Vec.load('word2vec_model_150_5_5.bin')
+    model = Word2Vec.load('data/word2vec_4000_review.bin')
 
     x = get_dataset(model, list(tokenized_review), param['size'])
+    # x = np.isnan(x)
+
     y = df['score'].to_numpy()
 
     return x.astype(float), y

@@ -13,6 +13,8 @@ from keras.initializers import VarianceScaling
 from sklearn.cluster import KMeans
 import metrics
 
+from preprocessing import *
+
 
 from keras.callbacks import Callback
 from keras.callbacks import CSVLogger # 세대 결과를 csv 파일에 스트림하는 콜백.
@@ -31,19 +33,15 @@ def autoencoder(dims, act='relu', init='glorot_uniform'): # 1~5점 댓글 특징
     # input
     x = Input(shape=(dims[0],), name='input')
     h = x
-
     # internal layers in encoder # 레이어쌓는부분
     for i in range(n_stacks-1):
         h = Dense(dims[i + 1], activation=act, kernel_initializer=init, name='encoder_%d' % i)(h)
-
     # hidden layer
     h = Dense(dims[-1], kernel_initializer=init, name='encoder_%d' % (n_stacks - 1))(h)  # hidden layer, features are extracted from here
-
     y = h
     # internal layers in decoder
     for i in range(n_stacks-1, 0, -1):
         y = Dense(dims[i], activation=act, kernel_initializer=init, name='decoder_%d' % i)(y)
-
     # output
     y = Dense(dims[0], kernel_initializer=init, name='decoder_0')(y)
 
@@ -160,6 +158,7 @@ class DEC(object):
 
         # begin pretraining
         t0 = time()
+        # self.autoencoder.fit(x, x, batch_size=batch_size, epochs=epochs, callbacks=cb)
         self.autoencoder.fit(x, x, batch_size=batch_size, epochs=epochs, callbacks=cb)
         print('Pretraining time: %ds' % round(time() - t0))
         self.autoencoder.save_weights(save_dir + '/ae_weights.h5')
@@ -226,7 +225,7 @@ class DEC(object):
                     print('Iter %d: acc = %.5f, nmi = %.5f, ari = %.5f' % (ite, acc, nmi, ari), ' ; loss=', loss)
 
                 # check stop criterion
-                delta_label = np.sum(y_pred != y_pred_last).astype(np.float32) / y_pred.shape[0]
+                delta_label = np.sum(y_pred != y_pred_last).astype(np.float64) / y_pred.shape[0]
                 y_pred_last = np.copy(y_pred)
                 if ite > 0 and delta_label < tol:
                     print('delta_label ', delta_label, '< tol ', tol)
@@ -266,7 +265,10 @@ def dec_play(df):
     # load dataset
     from datasets_min import load_review
 
-    param = {'size': 150}
+    param = {'size': 100}
+    df = remove_nan(df, ['preprocessed_review', 'score', 'review', 'tokenized_review'])
+    df = df.reset_index()
+
     x, y = load_review(df, **param)
 
     n_clusters = len(np.unique(y)) # y 라벨링 값의 갯수 = 클러스터링할 갯수
@@ -280,7 +282,7 @@ def dec_play(df):
     # prepare the DEC model
     dec = DEC(dims=[x.shape[-1], 500, 500, 2000, 10], n_clusters=n_clusters, init=init) # dec : DEC클래스의 특징을 갖는 객체
 
-    dec.pretrain(x=x, y=y, optimizer=pretrain_optimizer,
+    dec.pretrain(x, y=y, optimizer=pretrain_optimizer,
                      epochs=pretrain_epochs, batch_size=int(256), save_dir='results') # 이부분 필요한건지 궁금
 
     dec.model.summary()

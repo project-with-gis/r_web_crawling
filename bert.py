@@ -13,26 +13,30 @@ import random
 import time
 import datetime
 
+from csv_handler import *
+from DEC_min import *
 
-review_df_na = pd.read_csv("data/naver_total_pre_reviews_1115.csv")
-review_df_go = pd.read_csv("data/google_total_pre_reviews1112.csv")
-review_df_si = pd.read_csv("data/siksin_total_pre_reviews_1110.csv")
-review_df_di = pd.read_csv("data/diningcode_total_pre_reviews_1110.csv")
-pre_review = concat_df(review_df_di,review_df_go,review_df_na,review_df_si)
+import pandas as pd
+token_review = pd.read_csv("data/complete_duplicated.csv") # 중복제거 후
+score_1 = token_review[token_review.score == 1][:500]
+score_2 = token_review[token_review.score == 2][:500]
+score_3 = token_review[token_review.score == 3][:500]
+score_4 = token_review[token_review.score == 4][:500]
+score_5 = token_review[token_review.score == 5][:500]
+token_review_500 = pd.concat([score_1, score_2, score_3, score_4, score_5])
 
-pre_review = remove_nan(pre_review, ['preprocessed_review', 'score', 'review'])
-pre_review = pre_review.drop(['Unnamed: 0', 'Unnamed: 0.1'], axis = 1)
+review_after_dec = dec_play(token_review_500)
+# pre_review = remove_nan(token_review_500, ['preprocessed_review', 'score', 'review'])
+# pre_review = pre_review.drop(['Unnamed: 0', 'Unnamed: 0.1'], axis = 1)
 
-pre_review = pre_review.dropna(axis=0)
-pre_review = pre_review.reset_index(drop=True)
+# pre_review = pre_review.dropna(axis=0)
+# pre_review = pre_review.reset_index(drop=True)
 
 # train, test
-train = pre_review[:15000]
-test = pre_review[15000:20000]
+train, test = train_test_split(review_after_dec[['preprocessed_review', 'DEC_y']], test_size=0.2, random_state=42)
 
 # 문장별 전처리
 review_bert = ["[CLS] " + str(s) + " [SEP]" for s in train.preprocessed_review]
-review_bert[:5]
 
 # 토크나이징 - 사전학습된 BERT multilingual 모델 내 포함되어있는 토크나이저를 활용
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)

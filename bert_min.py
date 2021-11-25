@@ -226,5 +226,5 @@ def bert_model(train_dataloader, test_dataloader):
     print("")
     print("Training complete!")
 
-    torch.save(model, 'model.pt')  # 전체 모델 저장
-    torch.save(model.state_dict(), 'model_state_dict.pt')
+    torch.save(model, 'model_min1.pt')  # 전체 모델 저장
+    torch.save(model.state_dict(), 'model_state_min1.pt')
