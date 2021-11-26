@@ -4,7 +4,7 @@ import os
 
 
 def read_csv(path):  # 따옴표 잊지말기
-    data = pd.read_csv(path,encoding='utf-8-sig') # 마지막에 .csv 써주기
+    data = pd.read_csv(path, encoding='utf-8-sig') # 마지막에 .csv 써주기
     df = pd.DataFrame(data)
     return df
 
@@ -16,7 +16,6 @@ def concat_df(*args):
     total_df = pd.concat([*args])
     # total_df.to_csv('./data/total_reviews.csv', header=True, index=False)
     return total_df
-
 
 
 # def concat_review_csv(input_path):
@@ -36,3 +35,5 @@ def concat_df(*args):
 # df = read_csv('data/storeInfo_2.csv')
 # save_csv(df, './', 'csv_test.csv')
 # concat_review_csv('./data', './data/totalcsv.csv')
+
+
