@@ -6,11 +6,13 @@ import pandas as pd
 from hanspell import spell_checker
 from soynlp.normalizer import *
 
+
 # 특정행을 기준으로 null값이 있으면 해당 행을 삭제
-def remove_nan(df,subset): # subset에 컬럼명 적기 (하나여도 리스트로 작성 필수)
+def remove_nan(df, subset):  # subset에 컬럼명 적기 (하나여도 리스트로 작성 필수)
     df.dropna(subset=subset, inplace=True)
     df = df.reset_index(drop=True)
     return df
+
 
 # 전처리 후 ''리뷰가 비어있는 행 삭제
 def remove_after_nan(total_review):
@@ -20,12 +22,14 @@ def remove_after_nan(total_review):
     total_review.reset_index(drop=True)
     return total_review
 
+
 # 식신 사이트 date 형식변환
 def siksin_transform_datetime_df(df, int):
     date = df.iloc[:, int].astype(str)
     date = date.str.split(" ")
     df.iloc[:, int] = date.str.get(0)
     return df
+
 
 # 네이버사이트 date 형식변환
 def naver_transform_datetime_df(df):
@@ -35,8 +39,9 @@ def naver_transform_datetime_df(df):
         df['date'][i] = line
     # 날짜 변환
     for i in range(len(df)):
-      a = parse(df['date'][i], yearfirst=True)
-      df['date'][i] = a.strftime("%Y-%m-%d")
+        a = parse(df['date'][i], yearfirst=True)
+        df['date'][i] = a.strftime("%Y-%m-%d")
+
 
 # 구글 사이트 한글을 영어로 번역한 영어부분 제거
 def google_eng_transfer_del1(google_review_data):
@@ -51,10 +56,11 @@ def google_eng_transfer_del1(google_review_data):
     google_review_data.reset_index(drop=True)
     return google_review_data
 
+
 # 구글 사이트 영어번역부분제거 한글만 추출 -> 전처리에서 다시 제대로 제거됨
 def google_eng_transfer_del2(google_review_data):
     print(google_review_data)
-    reviewlist=[]
+    reviewlist = []
     for review in google_review_data:
         if "Translated by Google" in review:
             # print(review)
@@ -77,19 +83,19 @@ def google_eng_transfer_del2(google_review_data):
     return reviewlist
 
 
-
 # def swap_columns_with_name_df(df, *args): # (*args)에는 원하는 columns 이름 순서대로(따옴표 잊지말기)
 #     df = df[[*args]]
 #     # print(df.head())
 #     return df
 
 # 컬럼위치조정
-def swap_columns_with_num_df(df, *args): # (*args)에는 원하는 columns index순서대로
+def swap_columns_with_num_df(df, *args):  # (*args)에는 원하는 columns index순서대로
     col = df.columns.to_numpy()
     col = col[[*args]]
     df = df[col]
     # print(df.head())
     return df
+
 
 # 평점 반올림해주는 함수
 def rounding_off_scores_df(df, num):
@@ -137,18 +143,20 @@ def basic_check(review):  # 한 행마다 실행되도록. 이 함수가 받아�
     basic_preprocessed_corpus = clean_text(cleaned_corpus)
     return basic_preprocessed_corpus
 
+
 # 사전 기반의 오탈자 교정
 # 줄임말 원형 복원 (e.g. I'm not happy -> I am not happy)
-def spell_check_text(texts): # 한 댓글에 대한 문장들
-    lownword_map = make_dictionary() # 외래어 사전
-    spelled_sent = spell_checker.check(texts) # 띄어쓰기, 맞춤법
+def spell_check_text(texts):  # 한 댓글에 대한 문장들
+    lownword_map = make_dictionary()  # 외래어 사전
+    spelled_sent = spell_checker.check(texts)  # 띄어쓰기, 맞춤법
     checked_sent = spelled_sent.checked
-    normalized_sent = repeat_normalize(checked_sent) # 반복되는 이모티콘이나 자모를 normalization
-    for lownword in lownword_map: # 외래어 바꿔줌 (miss spell -> origin spell)
+    normalized_sent = repeat_normalize(checked_sent)  # 반복되는 이모티콘이나 자모를 normalization
+    for lownword in lownword_map:  # 외래어 바꿔줌 (miss spell -> origin spell)
         normalized_sent = normalized_sent.replace(lownword, lownword_map[lownword])
     corpus = normalized_sent
 
     return corpus
+
 
 def make_dictionary():
     lownword_map = {}
@@ -161,7 +169,8 @@ def make_dictionary():
         lownword_map[miss_spell] = ori_word
     return lownword_map
 
-def clean_punc(texts): #문장부호같은거 다 삭제
+
+def clean_punc(texts):  # 문장부호같은거 다 삭제
     punct = "/-'?!.,#$%\'()*+-/:;<=>@[\\]^_`{|}~" + '""“”’' + '∞θ÷α•à−β∅³π‘₹´°£€\×™√²—–&'
 
     punct_mapping = {"‘": "'", "₹": "e", "´": "'", "°": "", "€": "e", "™": "tm", "√": " sqrt ", "×": "x", "²": "2",
@@ -175,33 +184,34 @@ def clean_punc(texts): #문장부호같은거 다 삭제
     for p in punct:
         texts = texts.replace(p, f' {p} ')
 
-    specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': '', '\r': ''} # 대체하고싶은거 알아서 추가하기
+    specials = {'\u200b': ' ', '…': ' ... ', '\ufeff': '', 'करना': '', 'है': '', '\r': ''}  # 대체하고싶은거 알아서 추가하기
     for s in specials:
         texts = texts.replace(s, specials[s])
-    texts = texts.strip() #빈칸 삭제
+    texts = texts.strip()  # 빈칸 삭제
 
     return texts
 
+
 def clean_text(line):
     emoji_pattern = re.compile("["
-            u"\U0001F600-\U0001F64F"  # emoticons
-            u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-            u"\U0001F680-\U0001F6FF"  # transport & map symbols
-            u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                               u"\U0001F600-\U0001F64F"  # emoticons
+                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                               u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                               u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
                                "]+", flags=re.UNICODE)
-    review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',str(line)) #remove punctuation
+    review = re.sub(r'[@%\\*=()/~#&\+á?\xc3\xa1\|\.\:\;\!\,\_\~\$\'\"\(\)\♥\♡\ㅋ\ㅠ\ㅜ\ㄱ\ㅎ\ㄲ\ㅡ\?\^\!\-]', '',
+                    str(line))  # remove punctuation
     # review = re.sub(r'\d+','', review)# remove number# remove number
     # review = review.lower() #lower case
-    review = re.sub(r'~', '에서', review)  #50~60대 에서 ~
+    review = re.sub(r'~', '에서', review)  # 50~60대 에서 ~
     review = re.sub(r'[ㄱ-ㅎㅏ-ㅣ]', '', review)  # 한글 ㅎㅎ,ㅜ,ㅣ 등 오탈자 제거
-    review = re.sub(r'[a-zA-Z]', '', review) #영어 제거
-    review = re.sub(r'\s+', ' ', review) #remove extra space
-    review = re.sub(r'<[^>]+>','',review) #remove Html tags
-    review = re.sub(r'\s+', ' ', review) #remove spaces
-    review = re.sub(r"^\s+", '', review) #remove space from start
-    review = re.sub(r'\s+$', '', review) #remove space from the end
-    review = emoticon_normalize(review, num_repeats=2) #하하, 이모티콘 등 제거
-    review = emoji_pattern.sub(r'', review) #이모지 제거
+    review = re.sub(r'[a-zA-Z]', '', review)  # 영어 제거
+    review = re.sub(r'\s+', ' ', review)  # remove extra space
+    review = re.sub(r'<[^>]+>', '', review)  # remove Html tags
+    review = re.sub(r'\s+', ' ', review)  # remove spaces
+    review = re.sub(r"^\s+", '', review)  # remove space from start
+    review = re.sub(r'\s+$', '', review)  # remove space from the end
+    review = emoticon_normalize(review, num_repeats=2)  # 하하, 이모티콘 등 제거
+    review = emoji_pattern.sub(r'', review)  # 이모지 제거
 
     return review
-

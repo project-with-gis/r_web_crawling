@@ -17,6 +17,10 @@ def concat_df(*args):
     # total_df.to_csv('./data/total_reviews.csv', header=True, index=False)
     return total_df
 
+def remove_duple(df, score, review):
+    good= df[(df['score'] ==score) & (df['preprocessed_review']==review)][1:].index
+    df.drop(good, inplace=True)
+    return df
 
 # def concat_review_csv(input_path):
 #     all_csv_list = glob.glob(os.path.join(input_path, '*review.csv'))  # review.csv로 끝나는 모든 파일 리스트로 가져오기

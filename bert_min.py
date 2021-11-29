@@ -119,7 +119,7 @@ def bert_model(train_dataloader, test_dataloader):
                       lr = 2e-5, # 학습률
                       eps = 1e-8 # 0으로 나누는 것을 방지하기 위한 epsilon 값
       ) # 옵티마이저 설정
-    epochs = 4 # 에폭수
+    epochs = 10 # 에폭수
     total_steps = len(train_dataloader) * epochs # 총 훈련 스텝
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0,
                                                 num_training_steps = total_steps) # lr 조금씩 감소시키는 스케줄러

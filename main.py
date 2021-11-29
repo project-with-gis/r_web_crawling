@@ -9,6 +9,7 @@ from word2vec import *
 from DEC import *
 from DEC_min import *
 from bert_min import *
+from preprocessing import *
 
 # 띄어쓰기, 맞춤법 검사
 # !pip install git+https://github.com/ssut/py-hanspell.git
@@ -32,30 +33,52 @@ def main():
     # pre_review = prepro(total_review) # 전처리 함수 실행
     # print(pre_review)
 
-    # 중간 test용(워드임베딩_ver) - 전처리 된 데이터
-    pre_review = pd.read_csv("data/total_40000_review.csv")
-    score1 = pre_review[:300]
-    score2 = pre_review[800:1100]
-    score3 = pre_review[1600:1900]
-    score4 = pre_review[2400:2700]
-    score5 = pre_review[3200:3500]
-    pre_review = concat_df(score1,score2,score3,score4,score5)
+    # # 중간 test용(워드임베딩_ver) - 전처리 된 데이터
+    # pre_review = pd.read_csv("data/text_to_token_list_del_verb_noun.csv")
+    # print("중복제거 전 pre_review 개수 : ", len(pre_review))
+    # pre_review = remove_duple(pre_review, 5, '너무 맛있어요')
+    # pre_review = remove_duple(pre_review, 5, '아주 맛있어요')
+    # pre_review = remove_duple(pre_review, 4, '맛있습니다')
+    # pre_review = remove_duple(pre_review, 4, '맛나요')
+    # pre_review = remove_duple(pre_review, 4, '맛집')
+    # pre_review = remove_duple(pre_review, 4, '굿')
+    # pre_review = remove_duple(pre_review, 2, '별로')
+    # pre_review = remove_duple(pre_review, 4, '맛있어요')
+    # pre_review = remove_duple(pre_review, 4, '맛있어요')
+    # pre_review = remove_duple(pre_review, 4, '좋아요')
+    # pre_review = remove_duple(pre_review, 4, '맛있음')
+    #
+    # pre_review = pre_review.drop_duplicates(['review'], keep='first') # 나머지는 첫번째 값만
+    # print("중복제거 후 pre_review 개수 : ", len(pre_review))
+    # pre_review = pre_review.reset_index(drop=True)
+    #
+    # score1 = pre_review[pre_review['score']==1][:59304] # 2점짜리 리뷰 갯수에 맞춤
+    # score2 = pre_review[pre_review['score']==2][:59304]
+    # score3 = pre_review[pre_review['score']==3][:59304]
+    # score4 = pre_review[pre_review['score']==4][:59304]
+    # score5 = pre_review[pre_review['score']==5][:59304]
+    # pre_review = concat_df(score1,score2,score3,score4,score5)
+    # pre_review['score'] = pre_review['score'].map({1: 0, 2: 1, 3: 2, 4: 3, 5: 4})
+    # pre_review = remove_nan(pre_review, ['preprocessed_review', 'score', 'review', 'tokenized_review'])
+    # pre_review = pre_review.reset_index(drop=True)
 
-    # 3. DEC 모델의 input 만들기 - 리뷰 데이터 워드임베딩 - 토큰화 컬럼 추가/Word2vec모델 학습시켜서 저장
-    param = {'size': 100, 'window':5, 'min_count':2}
-    token_review = word2vec(df=pre_review, column='review', **param)
-    print(token_review[['review']])
+    # # 3. DEC 모델의 input 만들기 - 리뷰 데이터 워드임베딩 - 토큰화 컬럼 추가/Word2vec모델 학습시켜서 저장
+    # param = {'size': 100, 'window':5, 'min_count':1}
+    # token_review = word2vec(df=pre_review, column='review', **param)
+    # print(token_review[['review']])
 
-    # 중간 test용(DEC모델_ver) - 토큰화 된 데이터
-    # token_review = pd.read_csv("data/text_to_token_review.csv") # 중복제거 전
-    # token_review = pd.read_csv("data/complete_duplicated.csv") # 중복제거 후
-
+    # # 중간 test용(DEC모델_ver) - 토큰화 된 데이터
+    # token_review = pd.read_csv("data/민정6워드투벡.csv")
+    #
     # # 4. DEC 모델 돌리기 (학습된 Word2vec 모델 사용해서 워드임베딩 + autoencoder로 weight학습 + 클러스터링 -> dec_y 컬럼 추가)
-    # token_review = remove_nan(token_review, ['preprocessed_review', 'score', 'review'])
+    # token_review = remove_nan(token_review, ['preprocessed_review', 'score', 'review', 'tokenized_review'])
     # token_review = token_review.reset_index()
     # review_after_dec = dec_play(token_review)
-    # save_csv(review_after_dec, "민정1.csv")
+    # save_csv(review_after_dec, "dec_y저장2.csv")
 
+    # 중간 test용(BERT모델_ver) - 토큰화 된 데이터
+    review_after_dec = pd.read_csv("data/dec_y저장2.csv")
+    review_after_dec['DEC_y'] = review_after_dec['DEC_y'].map({0: 3, 1: 5, 2: 1, 3: 2, 4: 4}) # relabeling
 
     # # 5. BERT 분류모델 - original 라벨
     # pre_review = remove_nan(pre_review, ['preprocessed_review', 'score', 'review'])
@@ -64,11 +87,11 @@ def main():
     # bert_model(train_dataloader, test_dataloader) # bert 모델 저장
 
 
-    # # 6. BERT 분류모델 - DEC 라벨
-    # review_after_dec = review_after_dec[['preprocessed_review', 'DEC_y']]
-    # review_after_dec.rename(columns={'DEC_y': 'score'}, inplace=True)
-    # train_dataloader, test_dataloader = bert_prepro(review_after_dec)
-    # bert_model(train_dataloader, test_dataloader)  # bert 모델 저장 # 실행전에 모델 저장하는거 이름 바꿔주기
+    # 6. BERT 분류모델 - DEC 라벨
+    review_after_dec = review_after_dec[['preprocessed_review', 'DEC_y']]
+    review_after_dec.rename(columns={'DEC_y': 'score'}, inplace=True) # 버트모델 안에 변수명이랑 일치시킬려고
+    train_dataloader, test_dataloader = bert_prepro(review_after_dec)
+    bert_model(train_dataloader, test_dataloader)  # bert 모델 저장 # 실행전에 모델 저장하는거 이름 바꿔주기
 
 
 if __name__ == '__main__':
@@ -76,4 +99,7 @@ if __name__ == '__main__':
     # review_data = main('data/storeInfo_2.csv') # 최종 ver
     main()
     # print(review_after_dec)
+
+
+
 

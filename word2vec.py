@@ -49,9 +49,9 @@ def word2vec(df, column, **param): # 모델 저장 # **param은 word2vec내에 �
         except:
             a.append(0)
     df['word2vec'] = a
-    save_csv(df, '민정3워드투벡.csv')
+    save_csv(df, '민정6워드투벡.csv')
 
-    embedding_model.save('data/word2vec_4000_review.bin')
+    embedding_model.save('data/word2vec_final2_review.bin')
 
     return df
 
@@ -60,4 +60,7 @@ def word2vec(df, column, **param): # 모델 저장 # **param은 word2vec내에 �
 # df = pd.read_csv('data/naver_total(700000~750000).csv')
 # df = df[:100]
 # df = text_to_token(df=df, column='preprocessed_review')
+
+
+
 
