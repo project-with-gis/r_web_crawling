@@ -36,6 +36,9 @@ def main():
 
     # # 중간 test용(워드임베딩_ver) - 전처리 된 데이터
     # pre_review = pd.read_csv("data/text_to_token_list_del_verb_noun.csv")
+
+    # # 3. DEC 모델의 input 만들기 - 토큰화 컬럼 추가/Word2vec모델 학습시켜서 저장
+    # ## 중복 데이터 제거
     # print("중복제거 전 pre_review 개수 : ", len(pre_review))
     # pre_review = remove_duple(pre_review, 5, '너무 맛있어요')
     # pre_review = remove_duple(pre_review, 5, '아주 맛있어요')
@@ -63,7 +66,7 @@ def main():
     # pre_review = remove_nan(pre_review, ['preprocessed_review', 'score', 'review', 'tokenized_review'])
     # pre_review = pre_review.reset_index(drop=True)
 
-    # # 3. DEC 모델의 input 만들기 - 리뷰 데이터 워드임베딩 - 토큰화 컬럼 추가/Word2vec모델 학습시켜서 저장
+    # ## 리뷰 데이터 워드임베딩
     # param = {'size': 100, 'window':5, 'min_count':1}
     # token_review = word2vec(df=pre_review, column='review', **param)
     # print(token_review[['review']])
