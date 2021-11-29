@@ -16,7 +16,7 @@ from preprocessing import *
 # !pip install git+https://github.com/ssut/py-hanspell.git
 
 
-def main():
+def play(**path):
 
     # 1. 사이트별 크롤링 함수 실행 - 전체 사이트 크롤링부터 시작할 때 (최종 project_ver)
     # review_df_di, review_df_go, review_df_na, review_df_si = site_crawling(path) # path는 store_info 파일 경로를 의미
@@ -80,9 +80,8 @@ def main():
     # review_after_dec = dec_play(token_review)
     # save_csv(review_after_dec, "dec_y저장2.csv")
 
-    # 중간 test용(BERT모델_ver) - 토큰화 된 데이터
+    # 중간 test용(BERT모델_ver, KOBERT모델_ver) - 토큰화 된 데이터
     review_after_dec = pd.read_csv("data/dec_y저장2.csv")
-    review_after_dec['DEC_y'] = review_after_dec['DEC_y'].map({0: 3, 1: 5, 2: 1, 3: 2, 4: 4}) # relabeling
 
     # # 5. BERT 분류모델 - original 라벨
     # pre_review = remove_nan(pre_review, ['preprocessed_review', 'score', 'review'])
@@ -92,6 +91,7 @@ def main():
 
 
     # 6. BERT 분류모델 - DEC 라벨
+    review_after_dec['DEC_y'] = review_after_dec['DEC_y'].map({0: 3, 1: 5, 2: 1, 3: 2, 4: 4})  # relabeling
     review_after_dec = review_after_dec[['preprocessed_review', 'DEC_y']]
     review_after_dec.rename(columns={'DEC_y': 'score'}, inplace=True) # 버트모델 안에 변수명이랑 일치시킬려고
     train_dataloader, test_dataloader = bert_prepro(review_after_dec)
@@ -99,40 +99,22 @@ def main():
 
 
     # # 7. KoBERT 분류 모델
-    # df = pd.read_csv('data/min_score_count_data.csv')
-    # df.dropna(axis=0)
-    # df['score'] = df['score'].astype(int)
-    #
-    # # 점수마다 갯수 일치 시켜 데이트 프레임 생성
-    # score_5 = df[df['score'] == 5.0][:]
-    # score_4 = df[df['score'] == 4.0][:]
-    # score_3 = df[df['score'] == 3.0][:]
-    # score_2 = df[df['score'] == 2.0][:]
-    # score_1 = df[df['score'] == 1.0][:]
-    # # print(len(score_5), len(score_4),  len(score_3),  len(score_2),  len(score_1))
-    # df = pd.concat([score_1, score_2, score_3, score_4, score_5])
-    #
-    # scraping_data = df.reset_index(drop=True)
-    #
     # print('KOBERT START') # kobert model 학습 (평점 model)
     # column = 'preprocessed_review' # 'preprocessed_review'
     # num_classes = 5; max_len = 256; batch_size = 64; epochs = 5
     # model_name = 'kobert_test'
-    # kobert_train(scraping_data, column, num_classes, max_len, batch_size, epochs, model_name)
+    # kobert_train(review_after_dec, column, num_classes, max_len, batch_size, epochs, model_name)
     #
     # print('KOBERT predict START') # 학습 시킨 모델로 예측
     # model_name = 'kobert_test'
-    # predict_data = kobert_predict(scraping_data, model_name)
+    # predict_data = kobert_predict(review_after_dec, model_name)
     #
     # print(predict_data)
 
 
 if __name__ == '__main__':
-    # review_after_dec = main('data/diningcode_total_pre_reviews_1110.csv') # 전처리된 리뷰 데이터 넣음
-    # review_data = main('data/storeInfo_2.csv') # 최종 ver
-    main()
-    # print(review_after_dec)
-
+    # play('data/storeInfo_2.csv') # 최종 ver
+    play() # 중간 test ver
 
 
 
