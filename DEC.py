@@ -1,18 +1,5 @@
-"""
-Keras implementation for Deep Embedded Clustering (DEC) algorithm:
-
-        Junyuan Xie, Ross Girshick, and Ali Farhadi. Unsupervised deep embedding for clustering analysis. ICML 2016.
-
-Usage:
-    use `python DEC.py -h` for help.
-
-Author:
-    Xifeng Guo. 2017.1.30
-"""
-
-from tensorflow.keras.layers import Layer, InputSpec
-import tensorflow.python.keras.engine
-
+# from tensorflow.keras.layers import Layer, InputSpec
+# import tensorflow.python.keras.engine
 from time import time
 import numpy as np
 import keras.backend as K
@@ -25,9 +12,11 @@ from keras.initializers import VarianceScaling
 from sklearn.cluster import KMeans
 import metrics
 
+from preprocessing import *
 
 from keras.callbacks import Callback
-from keras.callbacks import CSVLogger # 세대 결과를 csv 파일에 스트림하는 콜백.
+from keras.callbacks import CSVLogger  # 세대 결과를 csv 파일에 스트림하는 콜백.
+
 
 def autoencoder(dims, act='relu', init='glorot_uniform'): # 1~5점 댓글 특징 추출해주는 함수
     """
@@ -43,26 +32,23 @@ def autoencoder(dims, act='relu', init='glorot_uniform'): # 1~5점 댓글 특징
     # input
     x = Input(shape=(dims[0],), name='input')
     h = x
-
     # internal layers in encoder # 레이어쌓는부분
-    for i in range(n_stacks-1):
+    for i in range(n_stacks - 1):
         h = Dense(dims[i + 1], activation=act, kernel_initializer=init, name='encoder_%d' % i)(h)
-
     # hidden layer
-    h = Dense(dims[-1], kernel_initializer=init, name='encoder_%d' % (n_stacks - 1))(h)  # hidden layer, features are extracted from here
-
+    h = Dense(dims[-1], kernel_initializer=init, name='encoder_%d' % (n_stacks - 1))(
+        h)  # hidden layer, features are extracted from here
     y = h
     # internal layers in decoder
-    for i in range(n_stacks-1, 0, -1):
+    for i in range(n_stacks - 1, 0, -1):
         y = Dense(dims[i], activation=act, kernel_initializer=init, name='decoder_%d' % i)(y)
-
     # output
     y = Dense(dims[0], kernel_initializer=init, name='decoder_0')(y)
 
     return Model(inputs=x, outputs=y, name='AE'), Model(inputs=x, outputs=h, name='encoder')
 
 
-class ClusteringLayer(Layer): # 아래 정의한 함수의 기능을 갖는 ClusteringLayer 객체 여러개 만들 수 있음 (각 객체는 서로 영향을 주지 않는다.)
+class ClusteringLayer(Layer):  # 아래 정의한 함수의 기능을 갖는 ClusteringLayer 객체 여러개 만들 수 있음 (각 객체는 서로 영향을 주지 않는다.)
     """
     Clustering layer converts input sample (feature) to soft label, i.e. a vector that represents the probability of the
     sample belonging to each cluster. The probability is calculated with student's t-distribution.
@@ -94,7 +80,8 @@ class ClusteringLayer(Layer): # 아래 정의한 함수의 기능을 갖는 Clus
         assert len(input_shape) == 2
         input_dim = input_shape[1]
         self.input_spec = InputSpec(dtype=K.floatx(), shape=(None, input_dim))
-        self.clusters = self.add_weight(shape=(self.n_clusters, input_dim), initializer='glorot_uniform', name='clusters')
+        self.clusters = self.add_weight(shape=(self.n_clusters, input_dim), initializer='glorot_uniform',
+                                        name='clusters')
         if self.initial_weights is not None:
             self.set_weights(self.initial_weights)
             del self.initial_weights
@@ -141,13 +128,15 @@ class DEC(object):
         self.autoencoder, self.encoder = autoencoder(self.dims, init=init)
 
         # prepare DEC model
-        clustering_layer = ClusteringLayer(self.n_clusters, name='clustering')(self.encoder.output) # ClusteringLayer의 객체 생성
-        self.model = Model(inputs=self.encoder.input, outputs=clustering_layer) # 모델의 input, output 지정
+        clustering_layer = ClusteringLayer(self.n_clusters, name='clustering')(
+            self.encoder.output)  # ClusteringLayer의 객체 생성
+        self.model = Model(inputs=self.encoder.input, outputs=clustering_layer)  # 모델의 input, output 지정
 
     def pretrain(self, x, y=None, optimizer='adam', epochs=200, batch_size=256, save_dir='results/temp'):
         print('...Pretraining...')
         self.autoencoder.compile(optimizer=optimizer, loss='mse')
-        csv_logger = callbacks.CSVLogger(save_dir + '/pretrain_log.csv') # callbacks.CSVLogger : 세대 결과를 csv 파일에 스트림하는 콜백.
+        csv_logger = callbacks.CSVLogger(
+            save_dir + '/pretrain_log.csv')  # callbacks.CSVLogger : 세대 결과를 csv 파일에 스트림하는 콜백.
         cb = [csv_logger]
         if y is not None:
             class PrintACC(callbacks.Callback):
@@ -157,23 +146,24 @@ class DEC(object):
                     super(PrintACC, self).__init__()
 
                 def on_epoch_end(self, epoch, logs=None):
-                    if int(epochs/10) != 0 and epoch % int(epochs/10) != 0:
+                    if int(epochs / 10) != 0 and epoch % int(epochs / 10) != 0:
                         return
                     feature_model = Model(self.model.input,
                                           self.model.get_layer(
                                               'encoder_%d' % (int(len(self.model.layers) / 2) - 1)).output)
                     features = feature_model.predict(self.x)
-                    km = KMeans(n_clusters=len(np.unique(self.y)), n_init=20) # , n_jobs=4
-                    y_pred = km.fit_predict(features) # 클러스터링 결과
+                    km = KMeans(n_clusters=len(np.unique(self.y)), n_init=20)  # , n_jobs=4
+                    y_pred = km.fit_predict(features)
                     # print()
-                    print(' '*8 + '|==>  acc: %.4f,  nmi: %.4f  <==|'
+                    print(' ' * 8 + '|==>  acc: %.4f,  nmi: %.4f  <==|'
                           % (metrics.acc(self.y, y_pred), metrics.nmi(self.y, y_pred)))
 
             cb.append(PrintACC(x, y))
 
         # begin pretraining
         t0 = time()
-        self.autoencoder.fit(x, x, batch_size=batch_size, epochs=epochs, callbacks=cb) # autoencoder 미리 학습해서 저장 ?
+        # self.autoencoder.fit(x, x, batch_size=batch_size, epochs=epochs, callbacks=cb)
+        self.autoencoder.fit(x, x, batch_size=batch_size, epochs=epochs, callbacks=cb)
         print('Pretraining time: %ds' % round(time() - t0))
         self.autoencoder.save_weights(save_dir + '/ae_weights.h5')
         print('Pretrained weights are saved to %s/ae_weights.h5' % save_dir)
@@ -194,7 +184,7 @@ class DEC(object):
         weight = q ** 2 / q.sum(0)
         return (weight.T / weight.sum(1)).T
 
-    def compile(self, optimizer='sgd', loss='kld'): # dec 모델의 특성 모두 정의하는 중
+    def compile(self, optimizer='sgd', loss='kld'):  # dec 모델의 특성 모두 정의하는 중
         self.model.compile(optimizer=optimizer, loss=loss)
 
     def fit(self, x, y=None, maxiter=2e4, batch_size=256, tol=1e-3,
@@ -239,7 +229,7 @@ class DEC(object):
                     print('Iter %d: acc = %.5f, nmi = %.5f, ari = %.5f' % (ite, acc, nmi, ari), ' ; loss=', loss)
 
                 # check stop criterion
-                delta_label = np.sum(y_pred != y_pred_last).astype(np.float32) / y_pred.shape[0]
+                delta_label = np.sum(y_pred != y_pred_last).astype(np.float64) / y_pred.shape[0]
                 y_pred_last = np.copy(y_pred)
                 if ite > 0 and delta_label < tol:
                     print('delta_label ', delta_label, '< tol ', tol)
@@ -250,12 +240,12 @@ class DEC(object):
             # train on batch
             # if index == 0:
             #     np.random.shuffle(index_array)
-            idx = index_array[index * batch_size: min((index+1) * batch_size, x.shape[0])]
+            idx = index_array[index * batch_size: min((index + 1) * batch_size, x.shape[0])]
             loss = self.model.train_on_batch(x=x[idx], y=p[idx])
             index = index + 1 if (index + 1) * batch_size <= x.shape[0] else 0
 
             # save intermediate model
-            if ite % save_interval == 0: # save_interval 단위로 모델 저장
+            if ite % save_interval == 0:
                 print('saving model to:', save_dir + '/DEC_model_' + str(ite) + '.h5')
                 self.model.save_weights(save_dir + '/DEC_model_' + str(ite) + '.h5')
 
@@ -269,87 +259,47 @@ class DEC(object):
         return y_pred
 
 
-if __name__ == "__main__":
-    # setting the hyper parameters
-    import argparse
-    # ArgumentParser 객체 생성 = 인자값을 받을 수 있는 인스턴스 생성
-    parser = argparse.ArgumentParser(description='train',
-                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--dataset', default='review',
-                        choices=['mnist', 'fmnist', 'usps', 'reuters10k', 'stl', 'imdb','review']) # add_argument : 입력받을 인자값 등록
-    parser.add_argument('--batch_size', default=256, type=int)
-    parser.add_argument('--maxiter', default=2e4, type=int)
-    parser.add_argument('--pretrain_epochs', default=None, type=int)
-    parser.add_argument('--update_interval', default=None, type=int)
-    parser.add_argument('--tol', default=0.001, type=float)
-    parser.add_argument('--ae_weights', default=None)
-    parser.add_argument('--save_dir', default='results')
-    args = parser.parse_args() # 입력받은 인자값을 args 객체에 저장
-    print(args)
+import pandas as pd
+
+
+def dec_play(df):
     import os
-    if not os.path.exists(args.save_dir):
-        os.makedirs(args.save_dir)
+    if not os.path.exists('results'):  # results라는 모델을 저장할 디렉토리 없을 경우 만들기
+        os.makedirs('results')
 
     # load dataset
-    from datasets import load_data
-    x, y = load_data(args.dataset)
-    n_clusters = len(np.unique(y)) # y 라벨링 값의 갯수 = 클러스터링할 갯수
+    from datasets import load_review
 
-    init = 'glorot_uniform' # 웨이트 초기화 기법 : 분산 조정 기반 초기화
-    pretrain_optimizer = 'adam'
+    param = {'size': 100}
+
+    x, y = load_review(df, **param)
+
+    n_clusters = len(np.unique(y))  # y 라벨링 값의 갯수 = 클러스터링할 갯수
+
     # setting parameters
-    if args.dataset == 'mnist' or args.dataset == 'fmnist':
-        update_interval = 140
-        pretrain_epochs = 300
-        init = VarianceScaling(scale=1. / 3., mode='fan_in',
-                               distribution='uniform')  # [-limit, limit], limit=sqrt(1./fan_in)
-        pretrain_optimizer = SGD(lr=1, momentum=0.9)
-    elif args.dataset == 'reuters10k':
-        update_interval = 30
-        pretrain_epochs = 50
-        init = VarianceScaling(scale=1. / 3., mode='fan_in',
-                               distribution='uniform')  # [-limit, limit], limit=sqrt(1./fan_in)
-        pretrain_optimizer = SGD(lr=1, momentum=0.9)
-    elif args.dataset == 'usps':
-        update_interval = 30
-        pretrain_epochs = 50
-    elif args.dataset == 'stl':
-        update_interval = 30
-        pretrain_epochs = 10
-    elif args.dataset == 'imdb':
-        update_interval = 10
-        pretrain_epochs = 10
-    elif args.dataset == 'review':
-        update_interval = 30
-        pretrain_epochs = 10
-
-
-    if args.update_interval is not None:
-        update_interval = args.update_interval
-    if args.pretrain_epochs is not None:
-        pretrain_epochs = args.pretrain_epochs
+    init = 'glorot_uniform'  # 웨이트 초기화 기법 : 분산 조정 기반 초기화
+    pretrain_optimizer = 'adam'
+    update_interval = 30
+    pretrain_epochs = 50
 
     # prepare the DEC model
-    dec = DEC(dims=[x.shape[-1], 500, 500, 2000, 10], n_clusters=n_clusters, init=init) # dec : DEC클래스의 특징을 갖는 객체
+    dec = DEC(dims=[x.shape[-1], 500, 500, 2000, 10], n_clusters=n_clusters, init=init)  # dec : DEC클래스의 특징을 갖는 객체
 
-    if args.ae_weights is None:
-        dec.pretrain(x=x, y=y, optimizer=pretrain_optimizer,
-                     epochs=pretrain_epochs, batch_size=args.batch_size,
-                     save_dir=args.save_dir)
-    else:
-        dec.autoencoder.load_weights(args.ae_weights)
+    dec.pretrain(x, y=y, optimizer=pretrain_optimizer,
+                 epochs=pretrain_epochs, batch_size=int(256), save_dir='results')  # 이부분 필요한건지 궁금
 
     dec.model.summary()
     t0 = time()
     dec.compile(optimizer=SGD(0.01, 0.9), loss='kld')
-    y_pred = dec.fit(x, y=y, tol=args.tol, maxiter=args.maxiter, batch_size=args.batch_size,
-                     update_interval=update_interval, save_dir=args.save_dir) # fit : 모델 학습
+    y_pred = dec.fit(x=x, y=y, tol=float(0.001), maxiter=int(2e4), batch_size=int(256),
+                     update_interval=update_interval, save_dir='results')  # fit : 모델 학습
+
     print('acc:', metrics.acc(y, y_pred))
     print('clustering time: ', (time() - t0))
 
+    df['DEC_y'] = y_pred
 
+    return df
 
-
-
-
-
+# if __name__ == "__main__":
+#     dec_play()

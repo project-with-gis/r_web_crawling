@@ -8,8 +8,8 @@ from hanspell import spell_checker
 import pandas as pd
 from word2vec import *
 from DEC import *
-from DEC_min import *
-from bert_min import *
+
+from bert import *
 from preprocessing import *
 
 # 띄어쓰기, 맞춤법 검사
