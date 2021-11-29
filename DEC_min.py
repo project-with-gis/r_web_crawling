@@ -265,7 +265,7 @@ def dec_play(df):
     # load dataset
     from datasets_min import load_review
 
-    param = {'size': 100}
+    param = {'size': 100, 'window': 5, 'min_count': 1}
     df = remove_nan(df, ['preprocessed_review', 'score', 'review', 'tokenized_review'])
     df = df.reset_index()
 
@@ -299,5 +299,21 @@ def dec_play(df):
     return df
 
 
-# if __name__ == "__main__":
-#     dec_play()
+if __name__ == "__main__":
+    import sys
+
+    sys.stdout = open('complete_duplicated.txt', 'w')
+    data = pd.read_csv('data/complete_duplicated.csv', encoding='UTF-8')
+    df = pd.DataFrame(data)
+    df = remove_nan(df, ['tokenized_review', 'score', 'review'])
+    param = {'size': 100, 'window': 5, 'min_count': 1}
+    score_5 = df[df['score'] == 5][:57924]
+    score_4 = df[df['score'] == 4][:57924]
+    score_3 = df[df['score'] == 3][:57924]
+    score_2 = df[df['score'] == 2][:57924]
+    score_1 = df[df['score'] == 1][:57924]
+    df = pd.concat([score_1, score_2, score_3, score_4, score_5])
+    df = df[:].reset_index(drop=True)
+
+    dec_play(df)
+    sys.stdout.close()

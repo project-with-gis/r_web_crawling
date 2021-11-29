@@ -36,8 +36,9 @@ def load_review(df, **param):
     # df = remove_nan(df, ['preprocessed_review', 'score', 'review', 'tokenized_review'])
     # df = df[df['tokenized_review'].str.len() != 0] # tokenized_review 빈 리스트 제거
     # df = df.reset_index()
+
     tokenized_review = df['tokenized_review']
-    model = Word2Vec.load('data/word2vec_4000_review.bin')
+    model = Word2Vec.load('C:/Users/alti1/PycharmProjects/r_web_crawling/data/word2vec_models/complete_duplicated.bin')
 
     x = get_dataset(model, list(tokenized_review), param['size'])
     # x = np.isnan(x)

@@ -30,8 +30,8 @@ def text_to_token(df, column):
     df['tokenized_review'] = tokenized_review
     return df
 
-def word2vec(df, column, **param): # 모델 저장 # **param은 word2vec내에 정의되어있는 Word2Vec함수의 파라미터
-    df = text_to_token(df, column) # 토큰화
+def word2vec(df, **param): # 모델 저장 # **param은 word2vec내에 정의되어있는 Word2Vec함수의 파라미터
+    # df = text_to_token(df, column) # 토큰화
     df = remove_nan(df, ['tokenized_review', 'score', 'review'])
     df = df.reset_index(drop=True)
     # review_data = review_data[review_data['tokenized_review'].str.len() != 0] # tokenized_review 빈 리스트 제거
@@ -51,7 +51,7 @@ def word2vec(df, column, **param): # 모델 저장 # **param은 word2vec내에 �
     df['word2vec'] = a
     save_csv(df, '민정3워드투벡.csv')
 
-    embedding_model.save('data/word2vec_4000_review.bin')
+    embedding_model.save('C:/Users/alti1/PycharmProjects/r_web_crawling/data/word2vec_models/complete_duplicated.bin')
 
     return df
 
