@@ -2,6 +2,7 @@ import requests
 import json
 import pandas as pd
 
+# 식신 사이트 기준 가게의 정보를 가져옴
 
 def region_id(headers):
     response = requests.get('https://api.siksinhot.com/v1/hp/area', headers=headers)

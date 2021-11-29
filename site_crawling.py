@@ -34,19 +34,16 @@ def google_crawling(path):
     # store_info 파일 읽어오는 함수 실행
     info_df = read_csv(path)
 
-    # 특정 가게만 지정할 때
-    # info_df = info[1800:1900].reset_index(drop=True)
-
     # 리뷰데이터 크롤링
     storeInfo, review_df_go = google(info_df)
 
     # 영어리뷰 번역리뷰 제거
     review_df_go = google_eng_transfer_del1(review_df_go)
-
     edit_reviewlist = google_eng_transfer_del2(review_df_go['review'])
     del review_df_go['review']
     review_df_go['review'] = edit_reviewlist
 
+    # 평점 반올림
     review_df_go = rounding_off_scores_df(review_df_go, 3)
 
     # csv 파일로 저장

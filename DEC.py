@@ -286,7 +286,7 @@ def dec_play(df):
     dec = DEC(dims=[x.shape[-1], 500, 500, 2000, 10], n_clusters=n_clusters, init=init)  # dec : DEC클래스의 특징을 갖는 객체
 
     dec.pretrain(x, y=y, optimizer=pretrain_optimizer,
-                 epochs=pretrain_epochs, batch_size=int(256), save_dir='results')  # 이부분 필요한건지 궁금
+                 epochs=pretrain_epochs, batch_size=int(256), save_dir='results')
 
     dec.model.summary()
     t0 = time()

@@ -10,7 +10,7 @@ import random
 
 def google(storeInfo, link, review):
     if link == True and review == True:
-        all_reviews = pd.DataFrame(columns=['store_id', 'date', 'score', 'review'])  # 빈 데이터프레임 생성
+        all_reviews = pd.DataFrame(columns=['store_id', 'date', 'score', 'review'])  # 빈 데이터프레임 생성해서 넣음
 
         if 'website' not in storeInfo.columns:
             storeInfo['website'] = pd.Series()

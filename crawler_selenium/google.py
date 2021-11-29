@@ -10,7 +10,6 @@ path = "C:/Users/aj878/PycharmProjects/limajin/"
 store_info = pd.read_csv(path + "store_info.csv")
 
 
-
 # 검색할 가게의 주소와 주소명
 name_addr=store_info[['store_name','store_addr']]
 
@@ -18,15 +17,10 @@ store_name_addr = []
 for i in range(len(name_addr)):
     store_name_addr.append(list(name_addr.iloc[i, :]))
 
-# store_addr = []
-# for addr in store_info['store_addr']:
-#     store_addr.append(addr)
 
 
-# info_count=len(store_info)
-# index_role = 0
-# total_nullist=[] # 결측치 있는 부분 알려줌
-# store_review_onelist=[] #리뷰 한 행이 될 리스트
+index_role = 0
+
 
 # 최종 리뷰 csv가 될 df 생성
 total_df = pd.DataFrame(index=range(0,1),columns=["store_id","portal_id", "date","score", "review"])
@@ -34,7 +28,6 @@ total_df = pd.DataFrame(index=range(0,1),columns=["store_id","portal_id", "date"
 ##########################################################################################
 # 자동 웹크롤러 만드는 것
 
-# test 1.2
 
 for s_name, s_addr in store_name_addr:
     # 주소와 가게이름 입력
@@ -71,7 +64,7 @@ for s_name, s_addr in store_name_addr:
     total_review_num = int(s1[:])
     total_review_num
 
-    #     # 걍 쭉내리기(자세히보기 안되고 빨리 내려감 )
+    #     # 그냥 쭉내리기(해당 사용시 자세히보기 눌러지지 않고 내려감 )
     #     scrollable_div = driver.find_element_by_xpath('//*[@id="pane"]/div/div[1]/div/div/div[2]')
     #     for i in range(0,(round(total_review_num/10)+1)):
     #         try:
@@ -81,8 +74,9 @@ for s_name, s_addr in store_name_addr:
     #         except:
     #             None
 
-    # 스크롤 하면서 긴 리뷰 더보기 누르기
 
+
+    # 스크롤 하면서 긴 리뷰 더보기 누르기
     num_of_page_downs = 20
     scrollable_div = driver.find_element_by_xpath('//*[@id="pane"]/div/div[1]/div/div/div[2]')
     #     while True:
