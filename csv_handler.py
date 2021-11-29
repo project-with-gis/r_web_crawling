@@ -4,7 +4,7 @@ import os
 
 
 def read_csv(path):  # 따옴표 잊지말기
-    data = pd.read_csv(path,encoding='utf-8-sig') # 마지막에 .csv 써주기
+    data = pd.read_csv(path, encoding='utf-8-sig') # 마지막에 .csv 써주기
     df = pd.DataFrame(data)
     return df
 
@@ -17,7 +17,10 @@ def concat_df(*args):
     # total_df.to_csv('./data/total_reviews.csv', header=True, index=False)
     return total_df
 
-
+def remove_duple(df, score, review):
+    good= df[(df['score'] ==score) & (df['preprocessed_review']==review)][1:].index
+    df.drop(good, inplace=True)
+    return df
 
 # def concat_review_csv(input_path):
 #     all_csv_list = glob.glob(os.path.join(input_path, '*review.csv'))  # review.csv로 끝나는 모든 파일 리스트로 가져오기
@@ -36,3 +39,5 @@ def concat_df(*args):
 # df = read_csv('data/storeInfo_2.csv')
 # save_csv(df, './', 'csv_test.csv')
 # concat_review_csv('./data', './data/totalcsv.csv')
+
+

@@ -68,3 +68,7 @@ attr = soup.select(' i.star > i ')
 for a in attr:
     aa = int(a['style'][6:8])
     print(aa)
+
+
+
+a = pd.read_csv('data/diningcode_total_review_1105.csv')
